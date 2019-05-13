@@ -24,10 +24,15 @@ namespace Bacchus
 
         }
 
+
         private void importerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormImporter formImporter = new FormImporter();
             formImporter.ShowDialog();                      //Permet affichage en mode modal sinon utiliser show()
+        }
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
