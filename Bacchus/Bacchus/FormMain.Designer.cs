@@ -1,4 +1,8 @@
-﻿namespace Bacchus
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Bacchus
 {
     partial class FormMain
     {
@@ -28,6 +32,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Articles");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Familles");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Sous familles");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Marques");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fichierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actualiserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,7 +44,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.itemsView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -64,24 +72,25 @@
             this.fichierToolStripMenuItem.Name = "fichierToolStripMenuItem";
             this.fichierToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
             this.fichierToolStripMenuItem.Text = "Fichier";
+            this.fichierToolStripMenuItem.Click += new System.EventHandler(this.fichierToolStripMenuItem_Click);
             // 
             // actualiserToolStripMenuItem
             // 
             this.actualiserToolStripMenuItem.Name = "actualiserToolStripMenuItem";
-            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
             this.actualiserToolStripMenuItem.Text = "Actualiser";
             // 
             // importerToolStripMenuItem
             // 
             this.importerToolStripMenuItem.Name = "importerToolStripMenuItem";
-            this.importerToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.importerToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
             this.importerToolStripMenuItem.Text = "Importer";
             this.importerToolStripMenuItem.Click += new System.EventHandler(this.importerToolStripMenuItem_Click);
             // 
             // exporterToolStripMenuItem
             // 
             this.exporterToolStripMenuItem.Name = "exporterToolStripMenuItem";
-            this.exporterToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.exporterToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
             this.exporterToolStripMenuItem.Text = "Exporter";
             this.exporterToolStripMenuItem.Click += new System.EventHandler(this.exporterToolStripMenuItem_Click);
             // 
@@ -109,7 +118,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.listView1);
+            this.splitContainer1.Panel2.Controls.Add(this.itemsView);
             this.splitContainer1.Panel2MinSize = 400;
             this.splitContainer1.Size = new System.Drawing.Size(1900, 400);
             this.splitContainer1.SplitterDistance = 476;
@@ -118,20 +127,37 @@
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Font = new System.Drawing.Font("Arial", 12F);
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
+            treeNode1.Name = "";
+            treeNode1.Text = "Articles";
+            treeNode2.Name = "";
+            treeNode2.Text = "Familles";
+            treeNode3.Name = "";
+            treeNode3.Text = "Sous familles";
+            treeNode4.Name = "";
+            treeNode4.Text = "Marques";
+            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4});
             this.treeView1.Size = new System.Drawing.Size(476, 400);
             this.treeView1.TabIndex = 1;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.itemsView_AfterSelect);
             // 
-            // listView1
+            // itemsView
             // 
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1420, 400);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.itemsView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.itemsView.Font = new System.Drawing.Font("Arial", 12F);
+            this.itemsView.Location = new System.Drawing.Point(0, 0);
+            this.itemsView.Name = "itemsView";
+            this.itemsView.Size = new System.Drawing.Size(1420, 400);
+            this.itemsView.TabIndex = 0;
+            this.itemsView.UseCompatibleStateImageBehavior = false;
+            this.itemsView.View = System.Windows.Forms.View.Details;
+            this.itemsView.Sorting = SortOrder.Ascending;
             // 
             // FormMain
             // 
@@ -167,7 +193,9 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView itemsView;
     }
+
+    
 }
 
