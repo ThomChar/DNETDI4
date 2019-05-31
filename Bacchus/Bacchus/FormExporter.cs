@@ -17,6 +17,7 @@ namespace Bacchus
     {
         private string dataBasePath;
         private MagasinDAO magasin;
+        private int nbArticlesExport;
 
         public FormExporter()
         {
@@ -26,6 +27,7 @@ namespace Bacchus
         public FormExporter(MagasinDAO magasin)
         {
             this.magasin = magasin;
+            this.nbArticlesExport = 0;
             InitializeComponent();
         }
 
@@ -76,7 +78,7 @@ namespace Bacchus
             }
             else
             {
-             this.magasin.export(dataBasePath, this.backgroundWorker, e); 
+             this.nbArticlesExport = this.magasin.export(dataBasePath, this.backgroundWorker, e); 
             }
         }
 
@@ -90,13 +92,13 @@ namespace Bacchus
         {
             if (e.Cancelled)
             {
-                display("Vous avez annulé l'import");
+                display("Annulation ! " + this.nbArticlesExport + " articles ont tout de même été exporté");
                 progressBar.Value = 0;
                 percentageLabel.Text = " 0 %";
             }
             else
             {
-                display("Succés! L'import est maintenant terminé");
+                display("Succés! " + this.nbArticlesExport + " articles ont été exporté");
                 this.Close();
             }
         }

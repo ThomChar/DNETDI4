@@ -113,6 +113,42 @@ namespace Bacchus.Dao
             return found;
         }
 
+        public SousFamille updateSousFamille(SousFamille sousFamille)
+        {
+            SousFamille sfm = null;
+            //on cherche puis modifie l'objet en local
+            for (int i = 0; i < this.magasin.ListeSousFamilles.Count(); i++)
+            {
+                if (this.magasin.ListeSousFamilles[i].RefSousFamille == sousFamille.RefSousFamille)
+                {
+                    this.magasin.ListeSousFamilles[i].RefFamille = sousFamille.RefFamille;
+                    this.magasin.ListeSousFamilles[i].Nom = sousFamille.Nom;
+                }
+            }
+
+            //Update tous les articles locals correspondant à cette SousFamille
+            for (int i = 0; i < this.magasin.ListeArticles.Count(); i++)
+            {
+                if (this.magasin.ListeArticles[i].RefSousFamille.RefSousFamille == sousFamille.RefSousFamille)
+                {
+                    this.magasin.ListeArticles[i].RefSousFamille.Nom = sousFamille.Nom;
+                }
+            }
+
+            sql_con.Open();
+            string sql = "UPDATE SousFamilles SET Nom = @nom, RefFamille = @refFamille  WHERE RefSousFamille=@refSousFamille";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, sql_con))
+            {
+                cmd.Parameters.AddWithValue("@refFamille", sousFamille.RefFamille.RefFamille);
+                cmd.Parameters.AddWithValue("@nom", sousFamille.Nom);
+                cmd.Parameters.AddWithValue("@refSousFamille", sousFamille.RefSousFamille);
+                cmd.ExecuteNonQuery();
+                sfm = sousFamille;
+            }
+            this.sql_con.Close();
+            return sfm;
+        }
+
         public SousFamille getSousFamilleByName(string name)
         {
 
@@ -206,7 +242,9 @@ namespace Bacchus.Dao
                 if (sqReader.Read())
                 {
                     Famille famille = this.magasin.getFamille(String.Format("{0}", sqReader["RefFamille"]));
+                    //Console.WriteLine(famille.ToString());
                     sousFamille = new SousFamille(System.Convert.ToInt32(sqReader["RefSousFamille"]), famille, String.Format("{0}", sqReader["Nom"]));
+                    //Console.WriteLine(sousFamille.ToString());
                 }
             }
             sql_con.Close();

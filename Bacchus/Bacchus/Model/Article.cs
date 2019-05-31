@@ -76,22 +76,22 @@ namespace Bacchus.Model
         {
             get { return prixHT; }
             set{    //prixHT valide ?
-                if (value >= 0.0){
+                /*if (value >= 0.00){
                     throw new Exception("prixHT (" + value + ") invalide");
-                }else{
+                }else{*/
                     prixHT = value;
-                }
+                //}
             }
         }
 
         public int Quantite{
             get { return quantite; }
             set {    //quantite valide ?
-                if (value <= 0) { 
+                /*if (value >= 0) { 
                     throw new Exception("quantite (" + value + ") invalide");
-                }else{
+                }else{*/
                     quantite = value;
-                }
+                //}
             }
         }
 
@@ -106,6 +106,24 @@ namespace Bacchus.Model
                    refMarque == a.RefMarque &&
                    prixHT == a.PrixHT &&
                    quantite == a.Quantite;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -846460144;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(refArticle);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(description);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SousFamille>.Default.GetHashCode(refSousFamille);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Marque>.Default.GetHashCode(refMarque);
+            hashCode = hashCode * -1521134295 + prixHT.GetHashCode();
+            hashCode = hashCode * -1521134295 + quantite.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(RefArticle);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Description);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SousFamille>.Default.GetHashCode(RefSousFamille);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Marque>.Default.GetHashCode(RefMarque);
+            hashCode = hashCode * -1521134295 + PrixHT.GetHashCode();
+            hashCode = hashCode * -1521134295 + Quantite.GetHashCode();
+            return hashCode;
         }
 
         public override string ToString(){

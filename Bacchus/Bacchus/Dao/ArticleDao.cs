@@ -36,7 +36,7 @@ namespace Bacchus.Dao
                 throw new Exception("La RefArticle de l'objet article existe déjà");
             }
             //Controle de si  Sous famille existe   dans ce cas recuperation de tout l'objet sous famille et surtout l'id       Problème pour les articles qui ont le même nom mais Familles differente
-            SousFamille sf = this.magasin.SousFamilleDao.getSousFamilleByName(article.RefSousFamille.Nom.ToString());  // Faire une nouvelle fonction qui controle les 2 infos
+            SousFamille sf = this.magasin.SousFamilleDao.getSousFamilleByNameRefFamille(article.RefSousFamille.RefFamille.RefFamille,article.RefSousFamille.Nom.ToString());  // Faire une nouvelle fonction qui controle les 2 infos
             if (sf == null)
             {
                 throw new Exception("La RefSousFamille n'existe actuellement pas, veuillez changer la référence SousFamille");
@@ -71,6 +71,39 @@ namespace Bacchus.Dao
             }
             this.sql_con.Close();
             
+            return art;
+        }
+
+        public Article updateArticle(Article article)
+        {
+            Article art = null;
+            //on cherche puis modifie l'objet en local
+            for (int i = 0; i < this.magasin.ListeArticles.Count(); i++)
+            {
+                if (this.magasin.ListeArticles[i].RefArticle == article.RefArticle)
+                {
+                    this.magasin.ListeArticles[i].RefMarque = article.RefMarque;
+                    this.magasin.ListeArticles[i].RefSousFamille = article.RefSousFamille;
+                    this.magasin.ListeArticles[i].Quantite = article.Quantite;
+                    this.magasin.ListeArticles[i].Description = article.Description;
+                    this.magasin.ListeArticles[i].PrixHT = article.PrixHT;
+                }
+            }
+
+            sql_con.Open();
+            string sql = "UPDATE Articles SET Description = @description, RefSousFamille = @refSousFamille, RefMarque = @refMarque, Quantite = @quantite, PrixHT = @prixHT  WHERE RefArticle=@refArticle";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, sql_con))
+            {
+                cmd.Parameters.AddWithValue("@description", article.Description);
+                cmd.Parameters.AddWithValue("@refSousFamille", article.RefSousFamille.RefSousFamille);
+                cmd.Parameters.AddWithValue("@refMarque", article.RefMarque.RefMarque);
+                cmd.Parameters.AddWithValue("@quantite", article.Quantite);
+                cmd.Parameters.AddWithValue("@prixHT", article.PrixHT);
+                cmd.Parameters.AddWithValue("@refArticle", article.RefArticle);
+                cmd.ExecuteNonQuery();
+                art = article;
+            }
+            this.sql_con.Close();
             return art;
         }
 
