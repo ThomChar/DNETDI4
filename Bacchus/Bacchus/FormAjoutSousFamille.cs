@@ -59,9 +59,8 @@ namespace Bacchus
 
                             //Ajout de la SousFamille dans la Base de donnée
                             this.magasin.SousFamilleDao.addSousFamille(sousFamille);
-
                             Console.WriteLine(this.magasin.ListeSousFamilles.Find(x => x.Nom == sousFamille.Nom && x.RefFamille.Nom == sousFamille.RefFamille.Nom));
-                            MessageBox.Show("Sous-famille " + sousFamille.ToString() + " a été ajouté", "Succès Création Sous-famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //MessageBox.Show("Sous-famille " + sousFamille.ToString() + " a été ajouté", "Succès Création Sous-famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             this.Close();
                         }
                         else

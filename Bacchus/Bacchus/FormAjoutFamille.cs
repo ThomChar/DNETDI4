@@ -50,7 +50,7 @@ namespace Bacchus
                         this.magasin.FamilleDao.addFamille(famille);
 
                         Console.WriteLine(this.magasin.ListeFamilles.Find(x => x.Nom == famille.Nom));
-                        MessageBox.Show("Famille " + famille.Nom + " a été ajouté", "Succès Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // MessageBox.Show("Famille " + famille.Nom + " a été ajouté", "Succès Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
 
                     }else{

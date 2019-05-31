@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Bacchus.Controller;
+using System.Windows.Forms;
+using System.Security.Permissions;
 
 namespace Bacchus
 {
@@ -22,10 +24,10 @@ namespace Bacchus
             this.magasin = magasin;
             InitializeComponent();
 
+            listView.ContextMenuStrip = this.contextMenuStrip1;
+
             // Set the view to show details.
             listView.View = View.Details;
-            // Allow the user to edit item text.
-            listView.LabelEdit = true;
             // Allow the user to rearrange columns.
             listView.AllowColumnReorder = true;
             // Select the item and subitems when selection is made.
@@ -47,10 +49,16 @@ namespace Bacchus
             this.listView.LabelEdit = true;
             // Connect the ListView.ColumnClick event to the ColumnClick event handler.
             this.listView.ColumnClick += new ColumnClickEventHandler(listView_ColumnClick);
+            this.listView.Click += new EventHandler(this.listView_SelectedIndexChanged);
+            this.listView.DoubleClick += new EventHandler(this.listView_DoubleClick);
+
+           // this.listView. += new MouseEventArgs(listView_MouseUp);
+
 
             this.KeyPreview = true;
 
             //this.KeyDown += new KeyEventHandler(Form_KeyDown);
+            this.KeyDown += new KeyEventHandler(Form_KeyDown);
             //this.KeyUp += new KeyEventHandler(this.Form_KeyDown);
         }
 
@@ -151,7 +159,7 @@ namespace Bacchus
                 item.SubItems.Add(article.Quantite.ToString()); // quantity
                 listView.Items.Add(item);
             }
-            
+
             listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
         }
@@ -324,20 +332,6 @@ namespace Bacchus
 
         }
 
-        private void Form_KeyDown(ref Message msg, KeyEventArgs e)
-        {
-            Console.WriteLine("key:"+ e.KeyCode);
-            // switch case is the easy way, a hash or map would be better, 
-            // but more work to get set up.
-            switch (e.KeyCode)
-            {
-                case Keys.F5:
-                    // do whatever
-                    //bHandled = true;
-                    break;
-            }
-        }
-
         // The column we are currently using for sorting.
         private ColumnHeader SortingColumn = null;
 
@@ -400,10 +394,35 @@ namespace Bacchus
             listView.Sort();
         }
 
+            /**
+             * Event with the keybord
+             **/
+            private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F5:
+                    // refresh objects
+                    Console.WriteLine("refresh objects");
+                    refresh();
+                    break;
+
+                case Keys.Enter:
+                    // Update object
+                    updateObject();
+                    break;
+
+                case Keys.Delete:
+                    // Remove object
+                    removeObject();
+                    break;
+            }
+        }
+
         private void ajouterToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
-            formGestionAjouter.ShowDialog();                    
+            formGestionAjouter.ShowDialog();
         }
 
         private void modifierToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -411,21 +430,323 @@ namespace Bacchus
             FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
             formGestionModifier.ShowDialog();
         }
-    }
-
-    /*private void Form_KeyDown(ref Message msg, Keys keyData)
-    {
-        // switch case is the easy way, a hash or map would be better, 
-        // but more work to get set up.
-        switch (keyData)
+    
+        /**
+         * Update items (article, family, subfamily, brand)
+         **/
+        private void updateObject()
         {
-            case Keys.F5:
-                // do whatever
-                bHandled = true;
-                break;
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+            //Console.WriteLine("selectedNodeText:"+ selectedNodeText);
+
+            // get selected item
+            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
+
+            // action on item
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Article article = listView.SelectedItems[0].Tag as Article;
+                        if (article != null)
+                        {
+                            Console.WriteLine("update article " + article.RefArticle + " : " + article.Description);
+                            FormModifArticle formUpdateArticle = new FormModifArticle(magasin, article.RefArticle);
+                            formUpdateArticle.ShowDialog();
+                        }
+
+                    }
+                    break;
+                case "Familles":
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Famille family = listView.SelectedItems[0].Tag as Famille;
+                        if (family != null)
+                        {
+                            Console.WriteLine("update family " + family.RefFamille + ": " + family.Nom);
+                            FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family.RefFamille.ToString());
+                            formUpdateFamily.ShowDialog();
+                        }
+                            
+                    }
+                    break;
+                case "Sous familles":
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
+                        if (subFamily != null)
+                        {
+                            Console.WriteLine("update subfamily " + subFamily.RefSousFamille + ": " + subFamily.Nom);
+                            FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily.ToString());
+                            formUpdateSubFamily.ShowDialog();
+                        }
+                    }
+                    break;
+                case "Marques":
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Marque brand = listView.SelectedItems[0].Tag as Marque;
+                        if (brand != null)
+                        {
+                            Console.WriteLine("update brand " + brand.RefMarque + ": " + brand.Nom);
+                            FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand.RefMarque.ToString());
+                            formUpdateBrand.ShowDialog();
+                        }
+                    }
+                    break;
+            }
+            refresh();
+        }
+
+        /**
+         * Remove items (article, family, subfamily, brand)
+         **/
+        private void removeObject()
+        {
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+
+            // get selected item
+            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
+
+            try
+            {
+                // action on item
+                switch (selectedNodeText)
+                {
+                    case "Articles":
+                        foreach (ListViewItem item in breakfast)
+                        {
+                            Article article = listView.SelectedItems[0].Tag as Article;
+                            if (article != null)
+                            {
+                                Console.WriteLine("remove article " + article.RefArticle + " : " + article.Description);
+                                var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer l'article " + article.RefArticle + " : " + article.Description + " ?",
+                                         "Confirmation de suppression",
+                                         MessageBoxButtons.YesNo);
+
+                                if (confirmResult == DialogResult.Yes) 
+                                {
+                                    Console.WriteLine("deleted article");
+                                    magasin.ArticleDao.deleteArticle(article.RefArticle);
+                                    refresh();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("removal canceled");
+                                }
+                            }
+                        }
+                        break;
+                    case "Familles":
+                        foreach (ListViewItem item in breakfast)
+                        {
+                            Famille family = listView.SelectedItems[0].Tag as Famille;
+                            if (family != null)
+                            {
+                                Console.WriteLine("remove family " + family.RefFamille + " : " + family.Nom);
+                                var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
+                                         "Confirmation de suppression",
+                                         MessageBoxButtons.YesNo);
+                                if (confirmResult == DialogResult.Yes)
+                                {
+                                    int nbArticles = magasin.getArticlesByFamily(family.RefFamille).Count;
+                                    int nbSubFamilies = magasin.getSubFamiliesByFamily(family.RefFamille).Count;
+                                    if (nbArticles > 0 || nbSubFamilies > 0)
+                                    {
+                                        var confirmDelete = MessageBox.Show("La famille compte " + nbSubFamilies + " sous-famille(s) et " +
+                                             nbArticles + " article(s). Cette opération supprimera ces sous-familles et ces articles. Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
+                                         "Attention, suppression en cascade !!!",
+                                         MessageBoxButtons.YesNo);
+                                        if (confirmDelete != DialogResult.Yes)
+                                        {
+                                            Console.WriteLine("removal canceled");
+                                            break;
+                                        }
+                                    }
+
+                                    Console.WriteLine("deleted family");
+                                    magasin.FamilleDao.deleteFamille(family.RefFamille);
+                                    refresh();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("removal canceled");
+                                }
+                            }
+
+                        }
+                        break;
+                    case "Sous familles":
+                        foreach (ListViewItem item in breakfast)
+                        {
+                            SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
+                            if (subFamily != null)
+                            {
+                                Console.WriteLine("remove subFamily " + subFamily.RefFamille + " : " + subFamily.Nom);
+                                var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  sous-famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
+                                         "Confirmation de suppression",
+                                         MessageBoxButtons.YesNo);
+                                if (confirmResult == DialogResult.Yes)
+                                {
+                                    int nbArticles = magasin.getArticlesBySubFamily(subFamily.RefSousFamille).Count;
+                                    if (nbArticles > 0)
+                                    {
+                                        var confirmDelete = MessageBox.Show("La famille compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la sous famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
+                                         "Attention, suppression en cascade !!!",
+                                         MessageBoxButtons.YesNo);
+                                        if (confirmDelete != DialogResult.Yes)
+                                        {
+                                            Console.WriteLine("removal canceled");
+                                            break;
+                                        }
+                                    }
+
+                                    Console.WriteLine("deleted subfamily");
+                                    magasin.SousFamilleDao.deleteSousFamille(subFamily.RefSousFamille);
+                                    refresh();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("removal canceled");
+                                }
+                            }
+                        }
+                        break;
+                    case "Marques":
+                        foreach (ListViewItem item in breakfast)
+                        {
+                            Marque brand = listView.SelectedItems[0].Tag as Marque;
+                            if (brand != null)
+                            {
+                                Console.WriteLine("remove brand " + brand.RefMarque + " : " + brand.Nom);
+                                var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  marque " + brand.RefMarque + " : " + brand.Nom + " ?",
+                                         "Confirmation de suppression",
+                                         MessageBoxButtons.YesNo);
+                                if (confirmResult == DialogResult.Yes)
+                                {
+                                    int nbArticles = magasin.getArticlesByBrand(brand.RefMarque).Count;
+                                    if (nbArticles > 0)
+                                    {
+                                        var confirmDelete = MessageBox.Show("La marque compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la marque " + brand.RefMarque + " : " + brand.Nom + " ?",
+                                         "Attention, suppression en cascade !!!",
+                                         MessageBoxButtons.YesNo);
+                                        if (confirmDelete != DialogResult.Yes)
+                                        {
+                                            Console.WriteLine("removal canceled");
+                                            break;
+                                        }
+                                    }
+
+                                    Console.WriteLine("deleted brand");
+                                    magasin.MarqueDao.deleteMarque(brand.RefMarque);
+                                    refresh();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("removal canceled");
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("nothing selected");
+                        break;
+                }
+            }
+            catch (InvalidCastException e)
+            {
+                // Impossible deletion
+                MessageBox.Show(e.Message, "Suppression Imppossible");
+            }
+            
+        }
+
+        public void refresh()
+        {
+            Console.WriteLine("refresh objects");
+            magasin.refresh();
+
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    Console.WriteLine("Display products");
+                    displayProducts();
+                    break;
+                case "Familles":
+                    Console.WriteLine("Display families");
+                    displayFamilies();
+                    break;
+                case "Sous familles":
+                    Console.WriteLine("Display subfamilies");
+                    displaySubfamilies();
+                    break;
+                case "Marques":
+                    Console.WriteLine("Display brands");
+                    displayBrands();
+                    break;
+                default:
+                    Console.WriteLine("Display nothing");
+                    break;
+            }
+        }
+
+        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void ajouterToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    Console.WriteLine("Add product");
+                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin);
+                    formAjoutArticle.ShowDialog();
+                    break;
+                case "Familles":
+                    Console.WriteLine("Add subfamily");
+                    FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin);
+                    formAjoutFamille.ShowDialog();
+                    break;
+                case "Sous familles":
+                    Console.WriteLine("Add family");
+                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin);
+                    formAjoutSousFamille.ShowDialog();
+                    break;
+                case "Marques":
+                    Console.WriteLine("Add brand");
+                    FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin);
+                    formAjoutMarque.ShowDialog();
+                    break;
+            }
+            refresh();
+        }
+
+        private void modifierToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            updateObject();
+        }
+
+        private void listView_DoubleClick(object sender, System.EventArgs e)
+        {
+            updateObject();
+        }
+
+        private void supprimerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            removeObject();
         }
     }
-    */
 }
 
 

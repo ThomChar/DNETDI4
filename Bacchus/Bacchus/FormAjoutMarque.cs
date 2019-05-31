@@ -51,7 +51,7 @@ namespace Bacchus
                         this.magasin.MarqueDao.addMarque(marque);
 
                         Console.WriteLine(this.magasin.ListeMarques.Find(x => x.Nom == marque.Nom));
-                        MessageBox.Show("Marque " + marque.Nom + " a été ajouté", "Succès Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //MessageBox.Show("Marque " + marque.Nom + " a été ajouté", "Succès Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     } else{
                         throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");

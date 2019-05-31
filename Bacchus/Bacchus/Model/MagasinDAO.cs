@@ -56,13 +56,13 @@ namespace Bacchus.Model
         public List<Article> ListeArticles
         {
             get { return listeArticles; }
-            set{ listeArticles = value;}
+            set { listeArticles = value; }
         }
 
         public List<Famille> ListeFamilles
         {
             get { return listeFamilles; }
-            set { listeFamilles = value;}
+            set { listeFamilles = value; }
         }
 
         public List<SousFamille> ListeSousFamilles
@@ -203,7 +203,7 @@ namespace Bacchus.Model
             string refFamille = sousFamille.RefFamille.RefFamille.ToString();
 
             //this.SetConnection();
-           // DataBase db = new DataBase(dataBasePath);
+            // DataBase db = new DataBase(dataBasePath);
             SQLiteCommand command = new SQLiteCommand("SELECT RefFamille,Nom FROM Familles WHERE RefFamille =@refFamille", this.sql_con);
             command.Parameters.AddWithValue("@refFamille", refFamille);
 
@@ -261,7 +261,7 @@ namespace Bacchus.Model
             return sousFamille;
         }
 
-        public void setArticlesBD(){
+        public void setArticlesBD() {
 
             try
             {
@@ -285,13 +285,13 @@ namespace Bacchus.Model
                     this.listeArticles.Add(article);
                 }
 
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 Console.WriteLine(ex);
             }
         }
 
 
-        public void setFamillesBD(){
+        public void setFamillesBD() {
             try
             {
                 DataBase db = new DataBase(dataBasePath);
@@ -311,7 +311,7 @@ namespace Bacchus.Model
             }
         }
 
-            public void setSousFamillesBD(){
+        public void setSousFamillesBD() {
             try
             {
                 DataBase db = new DataBase(dataBasePath);
@@ -321,7 +321,7 @@ namespace Bacchus.Model
 
                 foreach (DataRow rows in dt.Rows)
                 {
-                    
+
                     //Recherche famille correspondante à refFamille "rows[1]"
                     famille = this.getFamille(rows[1].ToString());
                     //Creation Famille temporaire
@@ -338,7 +338,7 @@ namespace Bacchus.Model
             }
         }
 
-        public void setMarquesBD(){
+        public void setMarquesBD() {
             try
             {
                 DataBase db = new DataBase(dataBasePath);
@@ -350,7 +350,7 @@ namespace Bacchus.Model
                     marque = new Marque(System.Convert.ToInt32(rows[0]), rows[1].ToString());
                     Console.WriteLine(marque.ToString());
                     this.listeMarques.Add(marque);
-                    
+
                 }
 
             }
@@ -367,7 +367,7 @@ namespace Bacchus.Model
             BackgroundWorker bg = sender as BackgroundWorker;
             double percent = 0;
             double currentPosition = 0;
-            double length =  0;
+            double length = 0;
 
             //determiner le nombre de ligne totale à exporter
             foreach (Article art in this.ListeArticles)
@@ -378,7 +378,7 @@ namespace Bacchus.Model
                 }
             }
 
-            if (File.Exists(csvpath)){
+            if (File.Exists(csvpath)) {
                 File.Delete(csvpath);
             }
             StringBuilder csvcontent = new StringBuilder();
@@ -397,7 +397,7 @@ namespace Bacchus.Model
 
                     csvcontent.AppendLine(art.Description + ";" + art.RefArticle + ";" + art.RefMarque.Nom + ";" + art.RefSousFamille.RefFamille.Nom + ";" + art.RefSousFamille.Nom + ";" + art.PrixHT);
                     nbArticlesExpoter = nbArticlesExpoter + 1;
-                    currentPosition = currentPosition+1;
+                    currentPosition = currentPosition + 1;
                     percent = (currentPosition / length) * 100;
                     bg.ReportProgress(Convert.ToInt32(percent));
                 }
@@ -503,8 +503,8 @@ namespace Bacchus.Model
             }
             return nbArticlesImport;
         }
-                    //Dans celle-ci on ne vide pas la base de donnée et on ajoute les nouveaux imports à la base de donnée
-            public int importCrush(string csvpath, object sender, DoWorkEventArgs e)
+        //Dans celle-ci on ne vide pas la base de donnée et on ajoute les nouveaux imports à la base de donnée
+        public int importCrush(string csvpath, object sender, DoWorkEventArgs e)
         {
             int nbArticlesImport = 0;
             bool importDone = false;
@@ -514,13 +514,71 @@ namespace Bacchus.Model
             this.MarqueDao.deleteAllMarques();
             this.FamilleDao.deleteAllFamilles();
 
-            nbArticlesImport = this.import(csvpath,sender,e);
+            nbArticlesImport = this.import(csvpath, sender, e);
             return nbArticlesImport;
+        }
+
+        public void refresh()
+        {
+            this.listeArticles = new List<Article>();
+            this.listeFamilles = new List<Famille>();
+            this.listeMarques = new List<Marque>();
+            this.listeSousFamilles = new List<SousFamille>();
+
+            this.setMarquesBD();
+            this.setFamillesBD();
+            this.setSousFamillesBD();
+            this.setArticlesBD();
+        }
+
+        public List<Article> getArticlesBySubFamily(int refSubFamily)
+        {
+            List<Article> articles = new List<Article>();
+            foreach (Article article in listeArticles)
+            {
+                if (article.RefSousFamille.RefSousFamille == refSubFamily)
+                    articles.Add(article);
+            }
+            return articles;
+        }
+
+        public List<Article> getArticlesByFamily(int refFamily)
+        {
+            List<Article> articles = new List<Article>();
+            foreach (Article article in listeArticles)
+            {
+                if (article.RefSousFamille.RefFamille.RefFamille == refFamily)
+                    articles.Add(article);
+            }
+            return articles;
+        }
+
+        public List<Article> getArticlesByBrand(int refBrand)
+        {
+            List<Article> articles = new List<Article>();
+            foreach (Article article in listeArticles)
+            {
+                if (article.RefMarque.RefMarque == refBrand)
+                    articles.Add(article);
+            }
+            return articles;
+        }
+
+        public List<SousFamille> getSubFamiliesByFamily(int refFamily)
+        {
+            List<SousFamille> subFamilies = new List<SousFamille>();
+            foreach (SousFamille subFamily in listeSousFamilles)
+            {
+                if (subFamily.RefFamille.RefFamille == refFamily)
+                    subFamilies.Add(subFamily);
+            }
+            return subFamilies;
         }
 
         public override string ToString()
         {
             return "Articles: " + listeArticles.ToString() + "\nFamilles: " + listeFamilles.ToString() + "\nSousFamilles: " + listeSousFamilles.ToString() + "\nMarques: " + listeMarques.ToString();
         }
+
     }
 }

@@ -86,7 +86,7 @@ namespace Bacchus
                                     this.magasin.ArticleDao.addArticle(article);
 
                                     Console.WriteLine(this.magasin.ListeArticles.Find(x => x.Description == article.Description && x.RefSousFamille.Nom == article.RefSousFamille.Nom && x.RefSousFamille.RefFamille.RefFamille == article.RefSousFamille.RefFamille.RefFamille && x.RefMarque.Nom == article.RefMarque.Nom));
-                                    MessageBox.Show("Article " + article.ToString() + " a été ajouté", "Succès Création Article", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    //MessageBox.Show("Article " + article.ToString() + " a été ajouté", "Succès Création Article", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     this.Close();
                                 }
                                 else
