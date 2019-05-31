@@ -1,21 +1,15 @@
 ﻿using Bacchus.Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections;
-using System.Runtime.Remoting;
 using Bacchus.Controller;
 
 namespace Bacchus
 {
     public partial class FormMain : Form
     {
+        internal System.Windows.Forms.ListBox ListBox1;
         private MagasinDAO magasin;
 
         public FormMain()
@@ -53,6 +47,11 @@ namespace Bacchus
             this.listView.LabelEdit = true;
             // Connect the ListView.ColumnClick event to the ColumnClick event handler.
             this.listView.ColumnClick += new ColumnClickEventHandler(listView_ColumnClick);
+
+            this.KeyPreview = true;
+
+            //this.KeyDown += new KeyEventHandler(Form_KeyDown);
+            //this.KeyUp += new KeyEventHandler(this.Form_KeyDown);
         }
 
         public MagasinDAO MagasinDAO
@@ -310,6 +309,21 @@ namespace Bacchus
                     Console.WriteLine("nothing selected");
                     break;
             }
+
+        }
+
+        private void Form_KeyDown(ref Message msg, KeyEventArgs e)
+        {
+            Console.WriteLine("key:"+ e.KeyCode);
+            // switch case is the easy way, a hash or map would be better, 
+            // but more work to get set up.
+            switch (e.KeyCode)
+            {
+                case Keys.F5:
+                    // do whatever
+                    //bHandled = true;
+                    break;
+            }
         }
 
         // The column we are currently using for sorting.
@@ -336,7 +350,7 @@ namespace Bacchus
                 if (new_sorting_column == SortingColumn)
                 {
                     // Same column. Switch the sort order.
-                    if (SortingColumn.Text.StartsWith("> "))
+                    if (SortingColumn.Text.StartsWith("⇓ "))
                     {
                         sort_order = SortOrder.Descending;
                     }
@@ -359,11 +373,11 @@ namespace Bacchus
             SortingColumn = new_sorting_column;
             if (sort_order == SortOrder.Ascending)
             {
-                SortingColumn.Text = "> " + SortingColumn.Text;
+                SortingColumn.Text = "⇓ " + SortingColumn.Text;
             }
             else
             {
-                SortingColumn.Text = "< " + SortingColumn.Text;
+                SortingColumn.Text = "⇑ " + SortingColumn.Text;
             }
 
             // Create a comparer.
@@ -375,6 +389,19 @@ namespace Bacchus
         }
     }
 
+    /*private void Form_KeyDown(ref Message msg, Keys keyData)
+    {
+        // switch case is the easy way, a hash or map would be better, 
+        // but more work to get set up.
+        switch (keyData)
+        {
+            case Keys.F5:
+                // do whatever
+                bHandled = true;
+                break;
+        }
+    }
+    */
 }
 
 
