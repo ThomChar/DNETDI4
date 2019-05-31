@@ -17,6 +17,7 @@ namespace Bacchus
         private string dataBasePath;
         private MagasinDAO magasin;
         private bool importdecision;    // si valeur = true on lance export et ecrasement sinon on lance export ajout
+        private int ndArticlesImport;
 
         public FormImporter()
         {
@@ -27,6 +28,7 @@ namespace Bacchus
         {
             this.magasin = magasin;
             this.importdecision = false;
+            this.ndArticlesImport = 0;
             InitializeComponent();
         }
 
@@ -103,10 +105,10 @@ namespace Bacchus
             else
             {
                 if (this.importdecision == true) {
-                    this.magasin.importCrush(dataBasePath, this.backgroundWorker,  e);
+                    this.ndArticlesImport = this.magasin.importCrush(dataBasePath, this.backgroundWorker,  e);
                 }else
                 {
-                    this.magasin.import(dataBasePath, this.backgroundWorker,  e);
+                    this.ndArticlesImport =  this.magasin.import(dataBasePath, this.backgroundWorker,  e);
                 }
             }
         }
@@ -121,13 +123,13 @@ namespace Bacchus
         {
             if (e.Cancelled)
             {
-                display("Vous avez annulé l'import");
+                display("Annulation ! "+ ndArticlesImport +" articles ont tout de même été ajoué");
                 progressBar.Value = 0;
                 percentageLabel.Text = " 0 %";
             }
             else
             {
-                display("Succés! L'import est maintenant terminé");
+                display("Succés! "+ this.ndArticlesImport +" articles ont été ajouté par l'import");
                 this.Close();
             }
         }

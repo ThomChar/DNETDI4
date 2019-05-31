@@ -72,6 +72,42 @@ namespace Bacchus.Dao
             return mq;
         }
 
+        public Marque updateMarque(Marque marque)  
+        {
+            /*Marque mq = this.magasin.getMarque(marque.RefMarque.ToString());        //obtient l'ancien objet de la base de donnée si besoin
+            if (mq != null) //alors on peut effectuer la modification
+            {*/
+            Marque mq = null;
+                //on cherche puis modifie l'objet en local
+                for (int i = 0; i< this.magasin.ListeMarques.Count();i++){
+                    if (this.magasin.ListeMarques[i].RefMarque == marque.RefMarque)
+                    {
+                        this.magasin.ListeMarques[i].Nom = marque.Nom;
+                    }
+                }
+
+                //Update tous les articles locals correspondant à cette marque
+                for (int i = 0; i < this.magasin.ListeArticles.Count(); i++)
+                {
+                    if (this.magasin.ListeArticles[i].RefMarque.RefMarque == marque.RefMarque)
+                    {
+                        this.magasin.ListeArticles[i].RefMarque.Nom = marque.Nom;
+                    }
+                }
+
+            sql_con.Open();
+                string sql = "UPDATE Marques SET Nom = @nom  WHERE RefMarque=@refMarque";
+                using (SQLiteCommand cmd = new SQLiteCommand(sql, sql_con))
+                {
+                    cmd.Parameters.AddWithValue("@refMarque", marque.RefMarque);
+                    cmd.Parameters.AddWithValue("@nom", marque.Nom);
+                    cmd.ExecuteNonQuery();
+                    mq = marque;
+                }
+                this.sql_con.Close();
+            return mq;
+        }
+
         public Marque getMarqueByName(string name)
         {
 

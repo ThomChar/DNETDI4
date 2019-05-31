@@ -140,7 +140,7 @@
             this.Controls.Add(this.browserButton);
             this.Controls.Add(this.cancelButton);
             this.Name = "FormExporter";
-            this.Text = "FormExporter";
+            this.Text = "Exporter";
             this.ResumeLayout(false);
             this.PerformLayout();
 

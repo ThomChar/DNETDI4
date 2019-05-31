@@ -65,6 +65,18 @@ namespace Bacchus.Model
                    nom == sf.Nom;
         }
 
+        public override int GetHashCode()
+        {
+            var hashCode = 1236327150;
+            hashCode = hashCode * -1521134295 + refSousFamille.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Famille>.Default.GetHashCode(refFamille);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(nom);
+            hashCode = hashCode * -1521134295 + RefSousFamille.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Famille>.Default.GetHashCode(RefFamille);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Nom);
+            return hashCode;
+        }
+
         public override string ToString(){
             return "Sous Famille: " + refSousFamille + ", " + refFamille + ", " + nom;
         }

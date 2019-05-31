@@ -108,6 +108,21 @@ namespace Bacchus
             //magasin.MarqueDao.deleteAllMarques();
             //magasin.FamilleDao.deleteAllFamilles();
 
+            //Update Marque
+
+            //Update Familles
+
+            //Update SousFamille
+
+            //Update Famille
+
+            /*string test = "Sous-Famille hello12 121(Famille 12 aà)";
+            char[] delimiterChars = { '(', ')' };
+            string[] sousFamilleBoxContent = test.Split(delimiterChars);
+            Console.WriteLine(sousFamilleBoxContent[0]);
+            Console.WriteLine(sousFamilleBoxContent[1]);*/
+
+
             Console.WriteLine("Nombre d'articles chargés : " + magasin.ListeArticles.Count());
             Console.WriteLine("Nombre de marques chargées : " + magasin.ListeMarques.Count());
             Console.WriteLine("Nombre de familles chargées : " + magasin.ListeFamilles.Count());

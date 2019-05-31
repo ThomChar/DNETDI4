@@ -360,9 +360,10 @@ namespace Bacchus.Model
             }
         }
 
-        public bool export(string csvpath, object sender, DoWorkEventArgs e)
+        public int export(string csvpath, object sender, DoWorkEventArgs e)
         {
             bool exportDone = false;
+            int nbArticlesExpoter = 0;
             BackgroundWorker bg = sender as BackgroundWorker;
             double percent = 0;
             double currentPosition = 0;
@@ -395,7 +396,7 @@ namespace Bacchus.Model
                     }
 
                     csvcontent.AppendLine(art.Description + ";" + art.RefArticle + ";" + art.RefMarque.Nom + ";" + art.RefSousFamille.RefFamille.Nom + ";" + art.RefSousFamille.Nom + ";" + art.PrixHT);
-                    
+                    nbArticlesExpoter = nbArticlesExpoter + 1;
                     currentPosition = currentPosition+1;
                     percent = (currentPosition / length) * 100;
                     bg.ReportProgress(Convert.ToInt32(percent));
@@ -406,13 +407,14 @@ namespace Bacchus.Model
             File.AppendAllText(csvpath, csvcontent.ToString(), Encoding.UTF8);//Regarder pour l'encoding ce n'est ptet pas le bon
             //percent = 100;      //Le pourcentage de complétion est de 100 lorsque l'on a fini le traitement
             //bg.ReportProgress(Convert.ToInt32(percent));
-            return exportDone;
+            return nbArticlesExpoter;
         }
 
         //Dans celle-ci on vide la base de donnée et on effectue les nouveau imports
-        public bool import(string csvpath, object sender, DoWorkEventArgs e)
+        public int import(string csvpath, object sender, DoWorkEventArgs e)
         {
             bool importDone = false;
+            int nbArticlesImport = 0;
             BackgroundWorker bg = sender as BackgroundWorker;
             double percent = 0;
             FileInfo fi = new FileInfo(csvpath);
@@ -488,7 +490,7 @@ namespace Bacchus.Model
                         article = this.ArticleDao.addArticle(new Article(values[1], values[0], sousFamille, marque, Convert.ToDouble(values[5]), 1));
                     }
 
-                    
+                    nbArticlesImport = nbArticlesImport + 1;
                     currentPosition += line.Count();
                     percent = (currentPosition / length) * 100;
                     //Console.WriteLine(length);
@@ -499,11 +501,12 @@ namespace Bacchus.Model
                 percent = 100;      //Le pourcentage de complétion est de 100 lorsque l'on a fini le traitement
                 bg.ReportProgress(Convert.ToInt32(percent));
             }
-            return importDone;
+            return nbArticlesImport;
         }
                     //Dans celle-ci on ne vide pas la base de donnée et on ajoute les nouveaux imports à la base de donnée
-            public bool importCrush(string csvpath, object sender, DoWorkEventArgs e)
+            public int importCrush(string csvpath, object sender, DoWorkEventArgs e)
         {
+            int nbArticlesImport = 0;
             bool importDone = false;
             // Comme on fait import et ecrasement on commence par vider la base de données
             this.ArticleDao.deleteAllArticles();
@@ -511,8 +514,8 @@ namespace Bacchus.Model
             this.MarqueDao.deleteAllMarques();
             this.FamilleDao.deleteAllFamilles();
 
-            this.import(csvpath,sender,e);
-            return importDone;
+            nbArticlesImport = this.import(csvpath,sender,e);
+            return nbArticlesImport;
         }
 
         public override string ToString()

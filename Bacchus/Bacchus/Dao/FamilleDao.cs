@@ -35,14 +35,14 @@ namespace Bacchus.Dao
             using (SQLiteCommand cmd = new SQLiteCommand(sql, sql_con))
             {
                 lastIdFamilles = Convert.ToInt32(cmd.ExecuteScalar());
-                Console.WriteLine(lastIdFamilles);
+                //Console.WriteLine(lastIdFamilles);
             }
             this.sql_con.Close();
             return lastIdFamilles;
 
         }
 
-            public Famille addFamille(Famille famille)  //Nom de la famille dpit être unique
+        public Famille addFamille(Famille famille)  //Nom de la famille dpit être unique
         {
             Famille fm = getFamilleByName(famille.Nom);
             if (fm == null)
@@ -69,6 +69,52 @@ namespace Bacchus.Dao
             {
                 throw new Exception("Cette Famille existe déjà");
             }
+            return fm;
+        }
+
+        public Famille updateFamille(Famille famille)
+        {
+            /*Marque mq = this.magasin.getMarque(marque.RefMarque.ToString());        //obtient l'ancien objet de la base de donnée si besoin
+            if (mq != null) //alors on peut effectuer la modification
+            {*/
+            Famille fm = null;
+            //on cherche puis modifie l'objet en local
+            for (int i = 0; i < this.magasin.ListeFamilles.Count(); i++)
+            {
+                if (this.magasin.ListeFamilles[i].RefFamille == famille.RefFamille)
+                {
+                    this.magasin.ListeFamilles[i].Nom = famille.Nom;
+                }
+            }
+
+            //Update tous les sousFamilles locals correspondant à cette Famille
+            for (int i = 0; i < this.magasin.ListeSousFamilles.Count(); i++)
+            {
+                if (this.magasin.ListeSousFamilles[i].RefFamille.RefFamille == famille.RefFamille)
+                {
+                    this.magasin.ListeSousFamilles[i].RefFamille.Nom = famille.Nom;
+                }
+            }
+
+            //Update tous les articles locals correspondant à cette Famille
+            for (int i = 0; i < this.magasin.ListeArticles.Count(); i++)
+            {
+                if (this.magasin.ListeArticles[i].RefSousFamille.RefFamille.RefFamille == famille.RefFamille)
+                {
+                    this.magasin.ListeArticles[i].RefSousFamille.RefFamille.Nom = famille.Nom;
+                }
+            }
+
+            sql_con.Open();
+            string sql = "UPDATE Familles SET Nom = @nom  WHERE RefFamille=@refFamille";
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, sql_con))
+            {
+                cmd.Parameters.AddWithValue("@refFamille", famille.RefFamille);
+                cmd.Parameters.AddWithValue("@nom", famille.Nom);
+                cmd.ExecuteNonQuery();
+                fm = famille;
+            }
+            this.sql_con.Close();
             return fm;
         }
 

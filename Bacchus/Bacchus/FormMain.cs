@@ -57,5 +57,17 @@ namespace Bacchus
             formExporter.ShowDialog();                      //Permet affichage en mode modal sinon utiliser show()
 
         }
+
+        private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
+            formGestionAjouter.ShowDialog();
+        }
+
+        private void modifierToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
+            formGestionModifier.ShowDialog();
+        }
     }
 }
