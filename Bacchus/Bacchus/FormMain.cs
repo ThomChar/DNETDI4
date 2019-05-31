@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Bacchus.Controller;
-using System.Windows.Forms;
-using System.Security.Permissions;
 
 namespace Bacchus
 {
@@ -13,6 +11,9 @@ namespace Bacchus
     {
         internal System.Windows.Forms.ListBox ListBox1;
         private MagasinDAO magasin;
+
+        // The column we are currently using for sorting.
+        private ColumnHeader SortingColumn = null;
 
         public FormMain()
         {
@@ -49,7 +50,6 @@ namespace Bacchus
             this.listView.LabelEdit = true;
             // Connect the ListView.ColumnClick event to the ColumnClick event handler.
             this.listView.ColumnClick += new ColumnClickEventHandler(listView_ColumnClick);
-            this.listView.Click += new EventHandler(this.listView_SelectedIndexChanged);
             this.listView.DoubleClick += new EventHandler(this.listView_DoubleClick);
 
            // this.listView. += new MouseEventArgs(listView_MouseUp);
@@ -98,7 +98,7 @@ namespace Bacchus
 
         }
 
-        #region Items treeView
+        #region treeView
         private void listView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string selectedNodeText = e.Node.Text;
@@ -106,23 +106,20 @@ namespace Bacchus
             switch (selectedNodeText)
             {
                 case "Articles":
-                    Console.WriteLine("Display products");
                     displayProducts();
+                    refreshStatusStrip("Affichage de "+ magasin.ListeArticles.Count +" produit(s).");
                     break;
                 case "Familles":
-                    Console.WriteLine("Display families");
                     displayFamilies();
+                    refreshStatusStrip("Affichage de " + magasin.ListeFamilles.Count + " famille(s).");
                     break;
                 case "Sous familles":
-                    Console.WriteLine("Display subfamilies");
                     displaySubfamilies();
+                    refreshStatusStrip("Affichage de " + magasin.ListeSousFamilles.Count + " sous-famille(s).");
                     break;
                 case "Marques":
-                    Console.WriteLine("Display brands");
                     displayBrands();
-                    break;
-                default:
-                    Console.WriteLine("Display nothing");
+                    refreshStatusStrip("Affichage de " + magasin.ListeMarques.Count + " marques(s).");
                     break;
             }
         }
@@ -244,96 +241,88 @@ namespace Bacchus
             listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
-        private void Form1_Load(object sender, System.EventArgs e)
+        public void refresh()
         {
-            SizeLastColumn(listView);
-        }
+            Console.WriteLine("refresh objects");
+            magasin.refresh();
 
-        private void listView1_Resize(object sender, System.EventArgs e)
-        {
-            SizeLastColumn((ListView)sender);
-        }
-
-        private void SizeLastColumn(ListView lv)
-        {
-            lv.Columns[lv.Columns.Count - 1].Width = -2;
-        }
-        #endregion
-
-        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
-        {
-
-        }
-
-        private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
-            formGestionAjouter.ShowDialog();
-        }
-
-        private void modifierToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
-            formGestionModifier.ShowDialog();
-        }
-
-        private void listView_SelectedIndexChanged(object sender, EventArgs e)
-        {
             // get selected node of treeview
             String selectedNodeText = treeView1.SelectedNode.Text;
-            //Console.WriteLine("selectedNodeText:"+ selectedNodeText);
 
-            // get selected item
-            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
-
-            // action on item
             switch (selectedNodeText)
             {
                 case "Articles":
-                    Console.WriteLine("get product selected");
-                    foreach (ListViewItem item in breakfast)
-                    {
-                        Article article = listView.SelectedItems[0].Tag as Article;
-                        if (article != null)
-                            Console.WriteLine(article.ToString());
-                    }
+                    Console.WriteLine("Display products");
+                    displayProducts();
                     break;
                 case "Familles":
-                    Console.WriteLine("get family selected");
-                    foreach (ListViewItem item in breakfast)
-                    {
-                        Famille family = listView.SelectedItems[0].Tag as Famille;
-                        if (family != null)
-                            Console.WriteLine(family.ToString());
-                    }
+                    Console.WriteLine("Display families");
+                    displayFamilies();
                     break;
                 case "Sous familles":
-                    Console.WriteLine("get subfamily selected");
-                    foreach (ListViewItem item in breakfast)
-                    {
-                        SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
-                        if (subFamily != null)
-                            Console.WriteLine(subFamily.ToString());
-                    }
+                    Console.WriteLine("Display subfamilies");
+                    displaySubfamilies();
                     break;
                 case "Marques":
-                    Console.WriteLine("get brand selected");
-                    foreach (ListViewItem item in breakfast)
-                    {
-                        Marque brand = listView.SelectedItems[0].Tag as Marque;
-                        if (brand != null)
-                            Console.WriteLine(brand.ToString());
-                    }
+                    Console.WriteLine("Display brands");
+                    displayBrands();
                     break;
                 default:
-                    Console.WriteLine("nothing selected");
+                    Console.WriteLine("Display nothing");
                     break;
             }
-
         }
 
-        // The column we are currently using for sorting.
-        private ColumnHeader SortingColumn = null;
+        #endregion
+
+        #region events
+        /**
+         * Event with the keybord
+         **/
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F5:
+                    // refresh objects
+                    Console.WriteLine("refresh objects");
+                    refreshStatusStrip("Mise à jour des données.");
+                    refresh();
+                    break;
+
+                case Keys.Enter:
+                    // Update object
+                    updateObject();
+                    break;
+
+                case Keys.Delete:
+                    // Remove object
+                    removeObject();
+                    break;
+            }
+        }
+
+        private void modifierToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            updateObject();
+        }
+
+        private void listView_DoubleClick(object sender, System.EventArgs e)
+        {
+            updateObject();
+        }
+
+        private void supprimerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            removeObject();
+        }
+
+        private void refreshStatusStrip(String text)
+        {
+            toolStripStatusLabel1.Text = text;
+            statusStrip1.Font = new Font("Arial", 9, FontStyle.Regular);
+            statusStrip1.Padding = new System.Windows.Forms.Padding(10, 5, 10, 5);
+        }
 
         // Sort on this column.
         private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -379,10 +368,12 @@ namespace Bacchus
             SortingColumn = new_sorting_column;
             if (sort_order == SortOrder.Ascending)
             {
+                refreshStatusStrip("Tri ascendant sur " + new_sorting_column.Text + ".");
                 SortingColumn.Text = "⇓ " + SortingColumn.Text;
             }
             else
             {
+                refreshStatusStrip("Tri descendant sur " + new_sorting_column.Text + ".");
                 SortingColumn.Text = "⇑ " + SortingColumn.Text;
             }
 
@@ -393,32 +384,20 @@ namespace Bacchus
             // Sort.
             listView.Sort();
         }
+        #endregion
 
-            /**
-             * Event with the keybord
-             **/
-            private void Form_KeyDown(object sender, KeyEventArgs e)
+        #region menu
+        private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            switch (e.KeyCode)
-            {
-                case Keys.F5:
-                    // refresh objects
-                    Console.WriteLine("refresh objects");
-                    refresh();
-                    break;
-
-                case Keys.Enter:
-                    // Update object
-                    updateObject();
-                    break;
-
-                case Keys.Delete:
-                    // Remove object
-                    removeObject();
-                    break;
-            }
+            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
+            formGestionAjouter.ShowDialog();
         }
 
+        private void modifierToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
+            formGestionModifier.ShowDialog();
+        }
         private void ajouterToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
@@ -430,9 +409,50 @@ namespace Bacchus
             FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
             formGestionModifier.ShowDialog();
         }
-    
+        #endregion
+
+        #region operationOnObjects
+        
         /**
-         * Update items (article, family, subfamily, brand)
+         * add an element (article, family, subfamily, brand)
+         **/
+        private void ajouterToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    Console.WriteLine("Add product");
+                    refreshStatusStrip("Ajout d'un produit.");
+                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin);
+                    formAjoutArticle.ShowDialog();
+                    break;
+                case "Familles":
+                    Console.WriteLine("Add subfamily");
+                    refreshStatusStrip("Ajout d'une famille.");
+                    FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin);
+                    formAjoutFamille.ShowDialog();
+                    break;
+                case "Sous familles":
+                    Console.WriteLine("Add family");
+                    refreshStatusStrip("Ajout d'une sous-famille.");
+                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin);
+                    formAjoutSousFamille.ShowDialog();
+                    break;
+                case "Marques":
+                    Console.WriteLine("Add brand");
+                    refreshStatusStrip("Ajout d'une marque.");
+                    FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin);
+                    formAjoutMarque.ShowDialog();
+                    break;
+            }
+            refresh();
+        }
+
+        /**
+         * Update an element (article, family, subfamily, brand)
          **/
         private void updateObject()
         {
@@ -453,6 +473,7 @@ namespace Bacchus
                         if (article != null)
                         {
                             Console.WriteLine("update article " + article.RefArticle + " : " + article.Description);
+                            refreshStatusStrip("Modifier l'article " + article.RefArticle + " : " + article.Description + ".");
                             FormModifArticle formUpdateArticle = new FormModifArticle(magasin, article.RefArticle);
                             formUpdateArticle.ShowDialog();
                         }
@@ -466,10 +487,11 @@ namespace Bacchus
                         if (family != null)
                         {
                             Console.WriteLine("update family " + family.RefFamille + ": " + family.Nom);
+                            refreshStatusStrip("Modifier la famille " + family.RefFamille + ": " + family.Nom + ".");
                             FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family.RefFamille.ToString());
                             formUpdateFamily.ShowDialog();
                         }
-                            
+
                     }
                     break;
                 case "Sous familles":
@@ -479,6 +501,7 @@ namespace Bacchus
                         if (subFamily != null)
                         {
                             Console.WriteLine("update subfamily " + subFamily.RefSousFamille + ": " + subFamily.Nom);
+                            refreshStatusStrip("Modifier la sous-famille " + subFamily.RefSousFamille + ": " + subFamily.Nom + ".");
                             FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily.ToString());
                             formUpdateSubFamily.ShowDialog();
                         }
@@ -491,6 +514,7 @@ namespace Bacchus
                         if (brand != null)
                         {
                             Console.WriteLine("update brand " + brand.RefMarque + ": " + brand.Nom);
+                            refreshStatusStrip("Modifier la marque " + brand.RefMarque + ": " + brand.Nom + ".");
                             FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand.RefMarque.ToString());
                             formUpdateBrand.ShowDialog();
                         }
@@ -501,7 +525,7 @@ namespace Bacchus
         }
 
         /**
-         * Remove items (article, family, subfamily, brand)
+         * Remove an element (article, family, subfamily, brand)
          **/
         private void removeObject()
         {
@@ -527,10 +551,11 @@ namespace Bacchus
                                          "Confirmation de suppression",
                                          MessageBoxButtons.YesNo);
 
-                                if (confirmResult == DialogResult.Yes) 
+                                if (confirmResult == DialogResult.Yes)
                                 {
                                     Console.WriteLine("deleted article");
                                     magasin.ArticleDao.deleteArticle(article.RefArticle);
+                                    refreshStatusStrip("L'article " + article.RefArticle + " : " + article.Description + " a été supprimé.");
                                     refresh();
                                 }
                                 else
@@ -569,6 +594,7 @@ namespace Bacchus
 
                                     Console.WriteLine("deleted family");
                                     magasin.FamilleDao.deleteFamille(family.RefFamille);
+                                    refreshStatusStrip("La famille " + family.RefFamille + " : " + family.Nom + " a été supprimée.");
                                     refresh();
                                 }
                                 else
@@ -606,6 +632,7 @@ namespace Bacchus
 
                                     Console.WriteLine("deleted subfamily");
                                     magasin.SousFamilleDao.deleteSousFamille(subFamily.RefSousFamille);
+                                    refreshStatusStrip("La sous-famille " + subFamily.RefSousFamille + " : " + subFamily.Nom + " a été supprimée.");
                                     refresh();
                                 }
                                 else
@@ -642,6 +669,7 @@ namespace Bacchus
 
                                     Console.WriteLine("deleted brand");
                                     magasin.MarqueDao.deleteMarque(brand.RefMarque);
+                                    refreshStatusStrip("La marque " + brand.RefMarque + " : " + brand.Nom + " a été supprimée.");
                                     refresh();
                                 }
                                 else
@@ -661,92 +689,8 @@ namespace Bacchus
                 // Impossible deletion
                 MessageBox.Show(e.Message, "Suppression Imppossible");
             }
-            
-        }
-
-        public void refresh()
-        {
-            Console.WriteLine("refresh objects");
-            magasin.refresh();
-
-            // get selected node of treeview
-            String selectedNodeText = treeView1.SelectedNode.Text;
-
-            switch (selectedNodeText)
-            {
-                case "Articles":
-                    Console.WriteLine("Display products");
-                    displayProducts();
-                    break;
-                case "Familles":
-                    Console.WriteLine("Display families");
-                    displayFamilies();
-                    break;
-                case "Sous familles":
-                    Console.WriteLine("Display subfamilies");
-                    displaySubfamilies();
-                    break;
-                case "Marques":
-                    Console.WriteLine("Display brands");
-                    displayBrands();
-                    break;
-                default:
-                    Console.WriteLine("Display nothing");
-                    break;
-            }
-        }
-
-        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
 
         }
-
-        private void ajouterToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            // get selected node of treeview
-            String selectedNodeText = treeView1.SelectedNode.Text;
-
-            switch (selectedNodeText)
-            {
-                case "Articles":
-                    Console.WriteLine("Add product");
-                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin);
-                    formAjoutArticle.ShowDialog();
-                    break;
-                case "Familles":
-                    Console.WriteLine("Add subfamily");
-                    FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin);
-                    formAjoutFamille.ShowDialog();
-                    break;
-                case "Sous familles":
-                    Console.WriteLine("Add family");
-                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin);
-                    formAjoutSousFamille.ShowDialog();
-                    break;
-                case "Marques":
-                    Console.WriteLine("Add brand");
-                    FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin);
-                    formAjoutMarque.ShowDialog();
-                    break;
-            }
-            refresh();
-        }
-
-        private void modifierToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            updateObject();
-        }
-
-        private void listView_DoubleClick(object sender, System.EventArgs e)
-        {
-            updateObject();
-        }
-
-        private void supprimerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            removeObject();
-        }
+        #endregion
     }
 }
-
-
