@@ -9,27 +9,50 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections;
+using System.Runtime.Remoting;
+using Bacchus.Controller;
 
 namespace Bacchus
 {
     public partial class FormMain : Form
     {
         private MagasinDAO magasin;
-        private ListViewColumnSorter lvwColumnSorter;
 
         public FormMain()
         {
-           InitializeComponent();
-
+            InitializeComponent();
         }
 
         public FormMain(MagasinDAO magasin)
         {
             this.magasin = magasin;
             InitializeComponent();
-            lvwColumnSorter = new ListViewColumnSorter();
-            this.itemsView.ListViewItemSorter = lvwColumnSorter;
 
+            // Set the view to show details.
+            listView.View = View.Details;
+            // Allow the user to edit item text.
+            listView.LabelEdit = true;
+            // Allow the user to rearrange columns.
+            listView.AllowColumnReorder = true;
+            // Select the item and subitems when selection is made.
+            listView.FullRowSelect = true;
+            // Display grid lines.
+            listView.GridLines = true;
+            // Sort the items in the list in ascending order.
+            listView.Sorting = SortOrder.Ascending;
+
+            // Set the initial sorting type for the ListView.
+            this.listView.Sorting = SortOrder.None;
+            // Disable automatic sorting to enable manual sorting.
+            this.listView.View = View.Details;
+            this.listView.Location = new Point(10, 10);
+            this.listView.Name = "listView1";
+            this.listView.Size = new Size(300, 100);
+            this.listView.TabIndex = 0;
+            // Enable editing of the items in the ListView.
+            this.listView.LabelEdit = true;
+            // Connect the ListView.ColumnClick event to the ColumnClick event handler.
+            this.listView.ColumnClick += new ColumnClickEventHandler(listView_ColumnClick);
         }
 
         public MagasinDAO MagasinDAO
@@ -69,7 +92,7 @@ namespace Bacchus
         }
 
         #region Items treeView
-        private void itemsView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void listView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string selectedNodeText = e.Node.Text;
 
@@ -99,211 +122,124 @@ namespace Bacchus
         #endregion
 
         #region ListView
+        /**
+         * Display Products
+         **/
         public void displayProducts()
         {
-            itemsView.Columns.Clear();
-            itemsView.Items.Clear();
+            listView.Columns.Clear();
+            listView.Items.Clear();
 
-            itemsView.Columns.Add("item");
-            itemsView.Columns.Add("Ref-Article");
-            itemsView.Columns.Add("Description");
-            itemsView.Columns.Add("Famille - Sous famille");
-            itemsView.Columns.Add("Marque");
-            itemsView.Columns.Add("Prix HT");
-            itemsView.Columns.Add("Quantité");
+            // metadata of listView
+            listView.Columns.Add("Ref-Article");
+            listView.Columns.Add("Description");
+            listView.Columns.Add("Famille - Sous famille");
+            listView.Columns.Add("Marque");
+            listView.Columns.Add("Prix HT");
+            listView.Columns.Add("Quantité");
 
-            // Create three items and three sets of subitems for each item.
-            ListViewItem item1 = new ListViewItem("item1", 0);
-            // Place a check mark next to the item.
-            item1.Checked = true;
-            item1.SubItems.Add("1");
-            item1.SubItems.Add("Crayon de bois");
-            item1.SubItems.Add("Fourniture - crayon");
-            item1.SubItems.Add("Leclerc");
-            item1.SubItems.Add("1,00€");
-            item1.SubItems.Add("5");
-            ListViewItem item2 = new ListViewItem("item2", 1);
-            item2.Checked = true;
-            item2.SubItems.Add("1");
-            item2.SubItems.Add("Crayon de papier");
-            item2.SubItems.Add("Fourniture - crayon");
-            item2.SubItems.Add("Leclerc");
-            item2.SubItems.Add("4,00€");
-            item2.SubItems.Add("2");
-            ListViewItem item3 = new ListViewItem("item3", 2);
-            // Place a check mark next to the item.
-            item3.Checked = true;
-            item3.SubItems.Add("1");
-            item3.SubItems.Add("Crayon papier");
-            item3.SubItems.Add("Fourniture - crayon");
-            item3.SubItems.Add("Leclerc");
-            item3.SubItems.Add("5,00€");
-            item3.SubItems.Add("1");
+            List<Article> articles = magasin.ListeArticles;
 
-
-            // itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
-
-            //Add the items to the ListView.
-            itemsView.Items.AddRange(new ListViewItem[] { item1, item2, item3 });
-            itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            // add all articles on listView
+            foreach (Article article in articles)
+            {
+                ListViewItem item = new ListViewItem(article.RefArticle.ToString());
+                item.Tag = article; // tag with object Article
+                item.SubItems.Add(article.Description); // description
+                item.SubItems.Add(article.RefSousFamille.RefFamille.Nom + " - " + article.RefSousFamille.Nom); // family name and subfamily name
+                item.SubItems.Add(article.RefMarque.Nom); // brand name
+                item.SubItems.Add(article.PrixHT.ToString() + " €"); // price
+                item.SubItems.Add(article.Quantite.ToString()); // quantity
+                listView.Items.Add(item);
+            }
+            
+            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
         }
 
+        /**
+         * Display Families
+         **/
         public void displayFamilies()
         {
-            itemsView.Columns.Clear();
-            itemsView.Items.Clear();
+            listView.Columns.Clear();
+            listView.Items.Clear();
 
-            itemsView.Columns.Add("item");
-            itemsView.Columns.Add("Ref-Famille");
-            itemsView.Columns.Add("Nom");
+            // metadata of listView
+            listView.Columns.Add("Ref-Famille");
+            listView.Columns.Add("Nom");
 
-            // Create three items and three sets of subitems for each item.
-            ListViewItem item1 = new ListViewItem("item1", 0);
-            // Place a check mark next to the item.
-            item1.Checked = true;
-            item1.SubItems.Add("1");
-            item1.SubItems.Add("AAAAAAAAAAAA");
-            ListViewItem item2 = new ListViewItem("item2", 1);
-            item2.SubItems.Add("4");
-            item2.SubItems.Add("BBBBBBBBB");
-            ListViewItem item3 = new ListViewItem("item3", 2);
-            // Place a check mark next to the item.
-            item3.Checked = true;
-            item3.SubItems.Add("7");
-            item3.SubItems.Add("CCCCCCCCCC");
+            // get families
+            List<Famille> families = magasin.ListeFamilles;
 
-            /*
-            itemsView.Columns.Add("AAAAAAAAAAAAA", 100, HorizontalAlignment.Left);
-            itemsView.Columns.Add("BBBBBBB", 100, HorizontalAlignment.Left);
-            itemsView.Columns.Add("CCCCCCCCCCCCC", 200, HorizontalAlignment.Left);
-            itemsView.Columns.Add("DDDDDDDDDDDDDDD", 200, HorizontalAlignment.Left);
-            */
-            //Add the items to the ListView.
-            itemsView.Items.AddRange(new ListViewItem[] { item1, item2, item3 });
-
+            // add all families on listView
+            foreach (Famille family in families)
+            {
+                ListViewItem item = new ListViewItem(family.RefFamille.ToString());
+                item.Tag = family; // tag with object Famille
+                item.SubItems.Add(family.Nom);  // family name
+                listView.Items.Add(item);
+            }
+            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
+        /**
+         * Display Subfamilies
+         **/
         public void displaySubfamilies()
         {
-            itemsView.Columns.Clear();
-            itemsView.Items.Clear();
+            listView.Columns.Clear();
+            listView.Items.Clear();
 
-            itemsView.Columns.Add("item");
-            itemsView.Columns.Add("Ref-Sous Famille");
-            itemsView.Columns.Add("nom");
-            itemsView.Columns.Add("Famille");
+            // metadata of listView
+            listView.Columns.Add("Ref-Sous Famille");
+            listView.Columns.Add("nom");
+            listView.Columns.Add("Famille");
 
-            // Create three items and three sets of subitems for each item.
-            ListViewItem item1 = new ListViewItem("item1", 0);
-            // Place a check mark next to the item.
-            item1.Checked = true;
-            item1.SubItems.Add("1");
-            item1.SubItems.Add("2");
-            item1.SubItems.Add("3");
-            ListViewItem item2 = new ListViewItem("item2", 1);
-            item2.SubItems.Add("4");
-            item2.SubItems.Add("5");
-            item2.SubItems.Add("6");
-            ListViewItem item3 = new ListViewItem("item3", 2);
-            // Place a check mark next to the item.
-            item3.Checked = true;
-            item3.SubItems.Add("7");
-            item3.SubItems.Add("8");
-            item3.SubItems.Add("9");
+            // get subfamilies
+            List<SousFamille> subFamilies = magasin.ListeSousFamilles;
 
-
-            // itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
-
-            //Add the items to the ListView.
-            itemsView.Items.AddRange(new ListViewItem[] { item1, item2, item3 });
-            itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
+            // add all subfamilies on listView
+            foreach (SousFamille subfamily in subFamilies)
+            {
+                ListViewItem item = new ListViewItem(subfamily.RefSousFamille.ToString());
+                item.Tag = subfamily; // tag with object SousFamille
+                item.SubItems.Add(subfamily.Nom);   // subfamily name
+                item.SubItems.Add(subfamily.RefFamille.Nom);    // family name
+                listView.Items.Add(item);
+            }
+            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
+        /**
+         * Display Brands
+         **/
         public void displayBrands()
         {
-            itemsView.Columns.Clear();
-            itemsView.Items.Clear();
+            listView.Columns.Clear();
+            listView.Items.Clear();
 
-            itemsView.Columns.Add("item");
-            itemsView.Columns.Add("Ref-Marque");
-            itemsView.Columns.Add("nom");
+            // metadata of listView
+            listView.Columns.Add("Ref-Marque");
+            listView.Columns.Add("nom");
 
-            // Create three items and three sets of subitems for each item.
-            ListViewItem item1 = new ListViewItem("item1", 0);
-            // Place a check mark next to the item.
-            item1.Checked = true;
-            item1.SubItems.Add("1");
-            item1.SubItems.Add("2");
-            ListViewItem item2 = new ListViewItem("item2", 1);
-            item2.SubItems.Add("4");
-            item2.SubItems.Add("5");
-            ListViewItem item3 = new ListViewItem("item3", 2);
-            // Place a check mark next to the item.
-            item3.Checked = true;
-            item3.SubItems.Add("7");
-            item3.SubItems.Add("8");
+            // get brands
+            List<Marque> brands = magasin.ListeMarques;
 
-           
-
-
-            // itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
-
-            //Add the items to the ListView.
-            itemsView.Items.AddRange(new ListViewItem[] { item1, item2, item3 });
-
-            for (int i = 0; i < 20; i++)
+            // add all brands on listView
+            foreach (Marque brand in brands)
             {
-                ListViewItem item4 = new ListViewItem("item2", 1);
-                item4.SubItems.Add("4");
-                item4.SubItems.Add("5");
-
-                itemsView.Items.Add(item4);
+                ListViewItem item = new ListViewItem(brand.RefMarque.ToString());
+                item.Tag = brand; // tag with object Marque
+                item.SubItems.Add(brand.Nom);   // brand name
+                listView.Items.Add(item);
             }
-
-
-            itemsView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
+            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
-
-
-        private void itemsView_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            // Determine if clicked column is already the column that is being sorted.
-
-            Console.WriteLine("e.Column:"+ e.Column);
-            Console.WriteLine("lvwColumnSorter.SortColumn:" + lvwColumnSorter.SortColumn);
-            if (e.Column == lvwColumnSorter.SortColumn)
-            {
-                // Reverse the current sort direction for this column.
-                if (lvwColumnSorter.Order == SortOrder.Ascending)
-                {
-                    lvwColumnSorter.Order = SortOrder.Descending;
-                }
-                else
-                {
-                    lvwColumnSorter.Order = SortOrder.Ascending;
-                }
-            }
-            else
-            {
-                // Set the column number that is to be sorted; default to ascending.
-                lvwColumnSorter.SortColumn = e.Column;
-                lvwColumnSorter.Order = SortOrder.Ascending;
-            }
-
-            // Perform the sort with these new sort options.
-            this.itemsView.Sort();
-        }
-
 
         private void Form1_Load(object sender, System.EventArgs e)
         {
-            SizeLastColumn(itemsView);
+            SizeLastColumn(listView);
         }
 
         private void listView1_Resize(object sender, System.EventArgs e)
@@ -317,117 +253,128 @@ namespace Bacchus
         }
         #endregion
 
+        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+
+        }
+
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+            //Console.WriteLine("selectedNodeText:"+ selectedNodeText);
+
+            // get selected item
+            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
+
+            // action on item
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    Console.WriteLine("get product selected");
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Article article = listView.SelectedItems[0].Tag as Article;
+                        if (article != null)
+                            Console.WriteLine(article.ToString());
+                    }
+                    break;
+                case "Familles":
+                    Console.WriteLine("get family selected");
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Famille family = listView.SelectedItems[0].Tag as Famille;
+                        if (family != null)
+                            Console.WriteLine(family.ToString());
+                    }
+                    break;
+                case "Sous familles":
+                    Console.WriteLine("get subfamily selected");
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
+                        if (subFamily != null)
+                            Console.WriteLine(subFamily.ToString());
+                    }
+                    break;
+                case "Marques":
+                    Console.WriteLine("get brand selected");
+                    foreach (ListViewItem item in breakfast)
+                    {
+                        Marque brand = listView.SelectedItems[0].Tag as Marque;
+                        if (brand != null)
+                            Console.WriteLine(brand.ToString());
+                    }
+                    break;
+                default:
+                    Console.WriteLine("nothing selected");
+                    break;
+            }
+        }
+
+        // The column we are currently using for sorting.
+        private ColumnHeader SortingColumn = null;
+
+        // Sort on this column.
+        private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+
+            Console.WriteLine("Hello");
+            // Get the new sorting column.
+            ColumnHeader new_sorting_column = listView.Columns[e.Column];
+
+            // Figure out the new sorting order.
+            System.Windows.Forms.SortOrder sort_order;
+            if (SortingColumn == null)
+            {
+                // New column. Sort ascending.
+                sort_order = SortOrder.Ascending;
+            }
+            else
+            {
+                // See if this is the same column.
+                if (new_sorting_column == SortingColumn)
+                {
+                    // Same column. Switch the sort order.
+                    if (SortingColumn.Text.StartsWith("> "))
+                    {
+                        sort_order = SortOrder.Descending;
+                    }
+                    else
+                    {
+                        sort_order = SortOrder.Ascending;
+                    }
+                }
+                else
+                {
+                    // New column. Sort ascending.
+                    sort_order = SortOrder.Ascending;
+                }
+
+                // Remove the old sort indicator.
+                SortingColumn.Text = SortingColumn.Text.Substring(2);
+            }
+
+            // Display the new sort order.
+            SortingColumn = new_sorting_column;
+            if (sort_order == SortOrder.Ascending)
+            {
+                SortingColumn.Text = "> " + SortingColumn.Text;
+            }
+            else
+            {
+                SortingColumn.Text = "< " + SortingColumn.Text;
+            }
+
+            // Create a comparer.
+            listView.ListViewItemSorter =
+                new ListViewComparer(e.Column, sort_order);
+
+            // Sort.
+            listView.Sort();
+        }
     }
+
 }
 
 
-
-
-/// <summary>
-/// This class is an implementation of the 'IComparer' interface.
-/// </summary>
-public class ListViewColumnSorter : IComparer
-{
-    /// <summary>
-    /// Specifies the column to be sorted
-    /// </summary>
-    private int ColumnToSort;
-    /// <summary>
-    /// Specifies the order in which to sort (i.e. 'Ascending').
-    /// </summary>
-    private SortOrder OrderOfSort;
-    /// <summary>
-    /// Case insensitive comparer object
-    /// </summary>
-    private CaseInsensitiveComparer ObjectCompare;
-
-    /// <summary>
-    /// Class constructor.  Initializes various elements
-    /// </summary>
-    public ListViewColumnSorter()
-    {
-        // Initialize the column to '0'
-        ColumnToSort = 0;
-
-        // Initialize the sort order to 'none'
-        OrderOfSort = SortOrder.None;
-
-        // Initialize the CaseInsensitiveComparer object
-        ObjectCompare = new CaseInsensitiveComparer();
-    }
-
-    /// <summary>
-    /// This method is inherited from the IComparer interface.  It compares the two objects passed using a case insensitive comparison.
-    /// </summary>
-    /// <param name="x">First object to be compared</param>
-    /// <param name="y">Second object to be compared</param>
-    /// <returns>The result of the comparison. "0" if equal, negative if 'x' is less than 'y' and positive if 'x' is greater than 'y'</returns>
-    public int Compare(object x, object y)
-    {
-        int compareResult;
-        ListViewItem listviewX, listviewY;
-
-        // Cast the objects to be compared to ListViewItem objects
-        listviewX = (ListViewItem)x;
-        listviewY = (ListViewItem)y;
-
-        decimal num = 0;
-        if (decimal.TryParse(listviewX.SubItems[ColumnToSort].Text, out num))
-        {
-            compareResult = decimal.Compare(num, Convert.ToDecimal(listviewY.SubItems[ColumnToSort].Text));
-        }
-        else
-        {
-            // Compare the two items
-            compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text);
-        }
-
-        // Calculate correct return value based on object comparison
-        if (OrderOfSort == SortOrder.Ascending)
-        {
-            // Ascending sort is selected, return normal result of compare operation
-            return compareResult;
-        }
-        else if (OrderOfSort == SortOrder.Descending)
-        {
-            // Descending sort is selected, return negative result of compare operation
-            return (-compareResult);
-        }
-        else
-        {
-            // Return '0' to indicate they are equal
-            return 0;
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the number of the column to which to apply the sorting operation (Defaults to '0').
-    /// </summary>
-    public int SortColumn
-    {
-        set
-        {
-            ColumnToSort = value;
-        }
-        get
-        {
-            return ColumnToSort;
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the order of sorting to apply (for example, 'Ascending' or 'Descending').
-    /// </summary>
-    public SortOrder Order
-    {
-        set
-        {
-            OrderOfSort = value;
-        }
-        get
-        {
-            return OrderOfSort;
-        }
-    }
-
-}
