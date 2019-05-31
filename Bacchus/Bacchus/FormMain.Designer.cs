@@ -41,13 +41,13 @@ namespace Bacchus
             this.actualiserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            //this.gestionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            //this.ajouterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.listView = new System.Windows.Forms.ListView();
-
+            this.gestionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ajouterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modifierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -60,8 +60,7 @@ namespace Bacchus
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fichierToolStripMenuItem,
-                //this.gestionToolStripMenuItem
-            });
+            this.gestionToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1924, 28);
@@ -82,46 +81,22 @@ namespace Bacchus
             // actualiserToolStripMenuItem
             // 
             this.actualiserToolStripMenuItem.Name = "actualiserToolStripMenuItem";
-            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.actualiserToolStripMenuItem.Text = "Actualiser";
             // 
             // importerToolStripMenuItem
             // 
             this.importerToolStripMenuItem.Name = "importerToolStripMenuItem";
-            this.importerToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+            this.importerToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.importerToolStripMenuItem.Text = "Importer";
             this.importerToolStripMenuItem.Click += new System.EventHandler(this.importerToolStripMenuItem_Click);
             // 
             // exporterToolStripMenuItem
             // 
             this.exporterToolStripMenuItem.Name = "exporterToolStripMenuItem";
-            this.exporterToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+            this.exporterToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.exporterToolStripMenuItem.Text = "Exporter";
             this.exporterToolStripMenuItem.Click += new System.EventHandler(this.exporterToolStripMenuItem_Click);
-            // 
-            // gestionToolStripMenuItem
-            // 
-
-            /*
-            this.gestionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ajouterToolStripMenuItem,
-            this.modifierToolStripMenuItem});
-            this.gestionToolStripMenuItem.Name = "gestionToolStripMenuItem";
-            this.gestionToolStripMenuItem.Size = new System.Drawing.Size(71, 24);
-            this.gestionToolStripMenuItem.Text = "Gestion";
-            */
-
-            // 
-            // ajouterToolStripMenuItem
-            // 
-
-            /*
-            this.ajouterToolStripMenuItem.Name = "ajouterToolStripMenuItem";
-            this.ajouterToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.ajouterToolStripMenuItem.Text = "Ajouter";
-            this.ajouterToolStripMenuItem.Click += new System.EventHandler(this.ajouterToolStripMenuItem_Click);
-            */
-
             // 
             // statusStrip1
             // 
@@ -193,16 +168,28 @@ namespace Bacchus
             this.listView.View = System.Windows.Forms.View.Details;
             this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
             // 
+            // gestionToolStripMenuItem
+            // 
+            this.gestionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ajouterToolStripMenuItem,
+            this.modifierToolStripMenuItem});
+            this.gestionToolStripMenuItem.Name = "gestionToolStripMenuItem";
+            this.gestionToolStripMenuItem.Size = new System.Drawing.Size(71, 24);
+            this.gestionToolStripMenuItem.Text = "Gestion";
+            // 
+            // ajouterToolStripMenuItem
+            // 
+            this.ajouterToolStripMenuItem.Name = "ajouterToolStripMenuItem";
+            this.ajouterToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.ajouterToolStripMenuItem.Text = "Ajouter";
+            this.ajouterToolStripMenuItem.Click += new System.EventHandler(this.ajouterToolStripMenuItem_Click_1);
+            // 
             // modifierToolStripMenuItem
             // 
-
-            /*
             this.modifierToolStripMenuItem.Name = "modifierToolStripMenuItem";
             this.modifierToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.modifierToolStripMenuItem.Text = "Modifier";
-            this.modifierToolStripMenuItem.Click += new System.EventHandler(this.modifierToolStripMenuItem_Click);
-            */
-
+            this.modifierToolStripMenuItem.Click += new System.EventHandler(this.modifierToolStripMenuItem_Click_1);
             // 
             // FormMain
             // 
@@ -239,6 +226,9 @@ namespace Bacchus
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ListView listView;
+        private ToolStripMenuItem gestionToolStripMenuItem;
+        private ToolStripMenuItem ajouterToolStripMenuItem;
+        private ToolStripMenuItem modifierToolStripMenuItem;
     }
 
     

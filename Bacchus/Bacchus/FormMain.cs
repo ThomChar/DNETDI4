@@ -399,6 +399,18 @@ namespace Bacchus
             // Sort.
             listView.Sort();
         }
+
+        private void ajouterToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
+            formGestionAjouter.ShowDialog();                    
+        }
+
+        private void modifierToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
+            formGestionModifier.ShowDialog();
+        }
     }
 
     /*private void Form_KeyDown(ref Message msg, Keys keyData)
