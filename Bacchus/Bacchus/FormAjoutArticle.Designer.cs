@@ -52,6 +52,7 @@
             this.referenceTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.referenceTextBox.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.referenceTextBox.Location = new System.Drawing.Point(126, 60);
+            this.referenceTextBox.MaxLength = 8;
             this.referenceTextBox.Name = "referenceTextBox";
             this.referenceTextBox.Size = new System.Drawing.Size(503, 24);
             this.referenceTextBox.TabIndex = 29;
@@ -213,6 +214,7 @@
             this.descriptionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.descriptionTextBox.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.descriptionTextBox.Location = new System.Drawing.Point(126, 107);
+            this.descriptionTextBox.MaxLength = 150;
             this.descriptionTextBox.Name = "descriptionTextBox";
             this.descriptionTextBox.Size = new System.Drawing.Size(503, 24);
             this.descriptionTextBox.TabIndex = 39;

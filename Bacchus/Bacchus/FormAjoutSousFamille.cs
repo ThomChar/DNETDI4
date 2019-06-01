@@ -35,12 +35,13 @@ namespace Bacchus
             // center form
             this.StartPosition = FormStartPosition.CenterParent;
 
-            // Affectation d'u élément de la combo box à ex : NomFamille ... permettant la detection de cette box comme vide
-            familleComboBox.Items.Add("ex : nomFamille ...");
+            familleComboBox.DisplayMember = "Text";
+            familleComboBox.ValueMember = "Value";
+
             // Remplir la combo box avec la liste des Familles
             foreach (Famille fm in this.magasin.ListeFamilles)
             {
-                familleComboBox.Items.Add(fm.Nom);
+                familleComboBox.Items.Add(new { Text = fm.Nom, Value = fm });
             }
         }
 
@@ -57,13 +58,15 @@ namespace Bacchus
                 if (!rx.IsMatch(nomTextBox.Text) && !rx1.IsMatch(nomTextBox.Text))
                     throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
 
-                if ((familleComboBox.Text == "ex : nomFamille ...") || (familleComboBox.Text == ""))
-                    throw new Exception("Veuillez sélectionner un Famille valide dans la combo box (autre que ex : nomFamille ... ou vide)");
+                if (familleComboBox.SelectedIndex == -1)
+                    throw new Exception("Veuillez sélectionner une famille valide dans la combo box");
+
+                Famille stmp = (familleComboBox.SelectedItem as dynamic).Value;
 
                 //Création de l'objet Sous-Famille en Local
                 SousFamille sousFamille = new SousFamille();
                 sousFamille.Nom = nomTextBox.Text;
-                sousFamille.RefFamille = this.magasin.FamilleDao.getFamilleByName(familleComboBox.Text);
+                sousFamille.RefFamille = stmp;
 
                 //Ajout de la SousFamille dans la Base de donnée
                 this.magasin.SousFamilleDao.addSousFamille(sousFamille);

@@ -44,7 +44,6 @@ namespace Bacchus
             foreach (Famille fm in this.magasin.ListeFamilles)
             {
                 familleComboBox.Items.Add(new { Text = fm.Nom, Value = fm});
-                //familleComboBox.Items.Add(fm.Nom);
             }
 
             //Recontruire objet de sousFamille

@@ -45,7 +45,6 @@ namespace Bacchus
             foreach (SousFamille sfm in this.magasin.ListeSousFamilles)
             {
                 sousFamilleComboBox.Items.Add(sfm.Nom + "(" + sfm.RefFamille.Nom + ")");
-                //sousFamilleComboBox.Items.Add(new { Text = sfm.Nom /*+ "(" + sfm.RefFamille.Nom + ")"*/, Value = sfm });
             }
             
             // Remplir la combo box avec la liste des Marques

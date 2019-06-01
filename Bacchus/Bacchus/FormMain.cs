@@ -63,7 +63,6 @@ namespace Bacchus
             set { this.magasin = value; }
         }
 
-
         private void FormMain_Load(object sender, EventArgs e)
         {
             //if (Properties.Settings.Default.F1Size.Width == 0) Properties.Settings.Default.Upgrade();   //optionnel
@@ -85,7 +84,6 @@ namespace Bacchus
             }
             
         }
-
 
         private void importerToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -329,6 +327,7 @@ namespace Bacchus
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Boolean objectSelected = false;
+            contextMenuStrip1.Items[0].Enabled = true;
 
             // get selected node of treeview
             String selectedNodeText = treeView1.SelectedNode.Text;
@@ -348,7 +347,11 @@ namespace Bacchus
                         {
                             objectSelected = true;
                         }
-
+                    }
+                    if (magasin.ListeSousFamilles.Count == 0 || magasin.ListeMarques.Count == 0)
+                    {
+                        contextMenuStrip1.Items[0].Enabled = false;
+                        contextMenuStrip1.Items[0].ToolTipText = "Necessite au moins une sous famille et une marque.";
                     }
                     break;
                 case "Familles":
@@ -370,6 +373,11 @@ namespace Bacchus
                         {
                             objectSelected = true;
                         }
+                    }
+                    if (magasin.ListeFamilles.Count == 0)
+                    {
+                        contextMenuStrip1.Items[0].Enabled = false;
+                        contextMenuStrip1.Items[0].ToolTipText = "Necessite au moins une famille.";
                     }
                     break;
                 case "Marques":
@@ -652,6 +660,7 @@ namespace Bacchus
                         if (article != null)
                         {
                             Console.WriteLine("remove article " + article.RefArticle + " : " + article.Description);
+                            refreshStatusStrip("Suppression de l'article " + article.RefArticle + " : " + article.Description+".");
                             using (new CenterWinDialog(this))
                             {
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer l'article " + article.RefArticle + " : " + article.Description + " ?",
@@ -680,6 +689,7 @@ namespace Bacchus
                         if (family != null)
                         {
                             Console.WriteLine("remove family " + family.RefFamille + " : " + family.Nom);
+                            refreshStatusStrip("Suppression de la famille " + family.RefFamille + " : " + family.RefFamille + ".");
                             using (new CenterWinDialog(this))
                             {
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
@@ -726,6 +736,7 @@ namespace Bacchus
                         if (subFamily != null)
                         {
                             Console.WriteLine("remove subFamily " + subFamily.RefFamille + " : " + subFamily.Nom);
+                            refreshStatusStrip("Suppression de la sous famille " + subFamily.RefSousFamille + " : " + subFamily.Nom + ".");
                             using (new CenterWinDialog(this))
                             {
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  sous-famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
@@ -769,6 +780,7 @@ namespace Bacchus
                         if (brand != null)
                         {
                             Console.WriteLine("remove brand " + brand.RefMarque + " : " + brand.Nom);
+                            refreshStatusStrip("Suppression de la marque " + brand.RefMarque + " : " + brand.Nom + ".");
                             using (new CenterWinDialog(this))
                             {
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  marque " + brand.RefMarque + " : " + brand.Nom + " ?",

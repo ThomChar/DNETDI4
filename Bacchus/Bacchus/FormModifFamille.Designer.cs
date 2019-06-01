@@ -41,6 +41,7 @@
             this.nomTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nomTextBox.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.nomTextBox.Location = new System.Drawing.Point(88, 62);
+            this.nomTextBox.MaxLength = 50;
             this.nomTextBox.Name = "nomTextBox";
             this.nomTextBox.Size = new System.Drawing.Size(362, 24);
             this.nomTextBox.TabIndex = 34;

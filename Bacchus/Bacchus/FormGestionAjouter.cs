@@ -1,4 +1,5 @@
-﻿using Bacchus.Model;
+﻿using Bacchus.Controller;
+using Bacchus.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,17 +44,34 @@ namespace Bacchus
         private void addButton_Click(object sender, EventArgs e)
         {
             if (objectComboBox.Text == "Article"){
-                //this.Close();
-
-                FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin, formMain);
-                formAjoutArticle.ShowDialog();
-                Close();
+                if (magasin.ListeSousFamilles.Count == 0 || magasin.ListeMarques.Count == 0)
+                {
+                    using (new CenterWinDialog(this))
+                    {
+                        MessageBox.Show("Necessite au moins une sous famille et une marque.", "Ajout impossible !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                } else
+                {
+                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin, formMain);
+                    formAjoutArticle.ShowDialog();
+                    Close();
+                }
             }
             else if (objectComboBox.Text == "Sous-Famille")
             {
-                FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin, formMain);
-                formAjoutSousFamille.ShowDialog();
-                Close();
+                if (magasin.ListeFamilles.Count == 0)
+                {
+                    using (new CenterWinDialog(this))
+                    {
+                        MessageBox.Show("Necessite au moins une famille.", "Ajout impossible !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin, formMain);
+                    formAjoutSousFamille.ShowDialog();
+                    Close();
+                }
             }
             else if (objectComboBox.Text == "Famille")
             {

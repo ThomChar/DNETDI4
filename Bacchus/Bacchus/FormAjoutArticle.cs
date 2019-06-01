@@ -35,16 +35,12 @@ namespace Bacchus
             // center form
             this.StartPosition = FormStartPosition.CenterParent;
 
-            // Affectation d'un élément de la combo box à ex : nomSousFamille ... permettant la detection de cette box comme vide
-            sousFamilleComboBox.Items.Add("ex : nomSousFamille ...");
             // Remplir la combo box avec la liste des Sous-Familles
             foreach (SousFamille sfm in this.magasin.ListeSousFamilles)
             {
-                sousFamilleComboBox.Items.Add(sfm.Nom + "("+ sfm.RefFamille.Nom + ")");
+                sousFamilleComboBox.Items.Add(sfm.Nom + "(" + sfm.RefFamille.Nom + ")");
             }
 
-            // Affectation d'un élément de la combo box à ex : NomMarque ... permettant la detection de cette box comme vide
-            marqueComboBox.Items.Add("ex : nomMarque ...");
             // Remplir la combo box avec la liste des Marques
             foreach (Marque mq in this.magasin.ListeMarques)
             {
@@ -59,23 +55,20 @@ namespace Bacchus
 
             try
             {
-                if (referenceTextBox.Text == "ex : refArticle ..." || referenceTextBox.Text == "")
-                    throw new Exception("Veuillez inscrire une reference d'article valide avant de valider le formulaire de création");
-
                 if (descriptionTextBox.Text == "ex : descriptionArticle ..." || descriptionTextBox.Text == "")
                     throw new Exception("Veuillez inscrire une description valide avant de valider le formulaire de création");
 
-                if (!rx.IsMatch(referenceTextBox.Text) && !rx1.IsMatch(referenceTextBox.Text))
-                    throw new Exception("Le format du Champ reference est incorrect (au moins un caractere ou nombre)");
+                if (!rx.IsMatch(referenceTextBox.Text) && !rx1.IsMatch(referenceTextBox.Text) || referenceTextBox.Text.Length != 8)
+                    throw new Exception("La référence doit être composé de 8 caractères.");
 
                 if (rx.IsMatch(descriptionTextBox.Text) && rx1.IsMatch(descriptionTextBox.Text))
                     throw new Exception("Le format du Champ description est incorrect (au moins un caractere ou nombre)");
 
-                if ((sousFamilleComboBox.Text == "ex : nomSousFamille ...") || (sousFamilleComboBox.Text == ""))
-                    throw new Exception("Veuillez sélectionner une Sous-Famille valide dans la combo box (autre que ex : nomSousFamille ... ou vide)");
+                if (sousFamilleComboBox.SelectedIndex == -1)
+                    throw new Exception("Veuillez sélectionner une Sous-Famille valide dans la combo box");
 
-                if ((marqueComboBox.Text == "ex : nomMarque ...") || (marqueComboBox.Text == ""))
-                    throw new Exception("Veuillez sélectionner une Marque valide dans la combo box (autre que ex : nomMarque ... ou vide)");
+                if (marqueComboBox.SelectedIndex == -1)
+                    throw new Exception("Veuillez sélectionner une Marque valide dans la combo box");
 
                 //Création de l'objet Article en Local
                 Article article = new Article();
