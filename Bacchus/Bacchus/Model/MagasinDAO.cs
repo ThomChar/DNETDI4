@@ -268,7 +268,6 @@ namespace Bacchus.Model
                 DataBase db = new DataBase(dataBasePath);
                 DataTable dt = db.selectQuery("SELECT * FROM Articles");
                 Article article;
-                Famille famille;
                 SousFamille sousFamille;
                 Marque marque;
 
@@ -362,7 +361,6 @@ namespace Bacchus.Model
 
         public int export(string csvpath, object sender, DoWorkEventArgs e)
         {
-            bool exportDone = false;
             int nbArticlesExpoter = 0;
             BackgroundWorker bg = sender as BackgroundWorker;
             double percent = 0;
@@ -413,7 +411,6 @@ namespace Bacchus.Model
         //Dans celle-ci on vide la base de donnée et on effectue les nouveau imports
         public int import(string csvpath, object sender, DoWorkEventArgs e)
         {
-            bool importDone = false;
             int nbArticlesImport = 0;
             BackgroundWorker bg = sender as BackgroundWorker;
             double percent = 0;
@@ -507,7 +504,6 @@ namespace Bacchus.Model
         public int importCrush(string csvpath, object sender, DoWorkEventArgs e)
         {
             int nbArticlesImport = 0;
-            bool importDone = false;
             // Comme on fait import et ecrasement on commence par vider la base de données
             this.ArticleDao.deleteAllArticles();
             this.SousFamilleDao.deleteAllSousFamilles();

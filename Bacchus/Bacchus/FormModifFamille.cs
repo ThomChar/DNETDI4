@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Bacchus.Controller;
 using Bacchus.Model;
 
 namespace Bacchus
@@ -16,16 +17,18 @@ namespace Bacchus
     {
         private MagasinDAO magasin;
         private Famille famille;
+        private FormMain formMain;
 
         public FormModifFamille()
         {
             InitializeComponent();
         }
 
-        public FormModifFamille(MagasinDAO magasin, Famille famille)
+        public FormModifFamille(MagasinDAO magasin, Famille famille, FormMain formMain)
         {
             this.magasin = magasin;
             this.famille = famille;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -51,44 +54,40 @@ namespace Bacchus
 
         private void updateButton_Click(object sender, EventArgs e)
         {
-            if (nomTextBox.Text == "ex : Famille ..." || nomTextBox.Text == "")
-            {
-                MessageBox.Show("Veuillez inscrire un nom valide avant de valider le formulaire de création", "Erreur Générée lors de Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                try
-                {
-                    //Regex rx = new Regex("[À-ŸA-Z]{1}[à-ÿa-z]{0,39}");
-                    Regex rx = new Regex("[a-z]");
-                    Regex rx1 = new Regex("[0-9]");
-                    if (rx.IsMatch(nomTextBox.Text) || rx1.IsMatch(nomTextBox.Text))
-                    {
-                        if (this.magasin.FamilleDao.getFamilleByName(nomTextBox.Text) == null)
-                        {
-                            //Création de l'objet Famille en Local
-                            //Famille famille = new Famille();
-                            famille.Nom = nomTextBox.Text;
-                            //Ajout de la famille dans la Base de donnée
-                            this.magasin.FamilleDao.updateFamille(famille);
+            Regex rx = new Regex("[À-ŸA-Zà-ÿa-z]{1,50}");
+            Regex rx1 = new Regex("[0-9]");
 
-                            Console.WriteLine(this.magasin.ListeFamilles.Find(x => x.Nom == famille.Nom));
-                            MessageBox.Show("Famille " + nomFamilleOriginLabel.Text.ToString() + " a été modifié, son nouveau nom est " + famille.Nom, "Succès Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            this.Close();
-                        }
-                        else {
-                            throw new Exception("Une marque possède déjà ce nom, veuillez en chosir un autre (au moins un caractere ou nombre)");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
-                    }
-                }
-                catch (Exception ex)
+            try
+            {
+                if (nomTextBox.Text == "ex : Famille ..." || nomTextBox.Text == "")
+                    throw new Exception("Veuillez inscrire un nom valide avant de valider le formulaire de création");
+                    
+                if (!rx.IsMatch(nomTextBox.Text) && !rx1.IsMatch(nomTextBox.Text))
+                    throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
+
+                Famille familyAlreadyExists =this.magasin.FamilleDao.getFamilleByName(nomTextBox.Text);
+                if (familyAlreadyExists != null && familyAlreadyExists.RefFamille != famille.RefFamille)
+                    throw new Exception("Une marque possède déjà ce nom, veuillez en chosir un autre (au moins un caractere ou nombre)");
+
+                //Création de l'objet Famille en Local
+                famille.Nom = nomTextBox.Text;
+                //Ajout de la famille dans la Base de donnée
+                this.magasin.FamilleDao.updateFamille(famille);
+
+                // show that the change was successful
+                Console.WriteLine(this.magasin.ListeFamilles.Find(x => x.Nom == famille.Nom));
+                formMain.refreshStatusStrip("La famille " + famille.RefFamille + " : " + famille.Nom + " a été modifiée.");
+
+                formMain.refresh();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                // show error
+                formMain.refreshStatusStrip("Erreur : " + ex.Message);
+                using (new CenterWinDialog(this))
                 {
-                    //ex.GetBaseException();
-                    MessageBox.Show(ex.Message, "Erreur Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Impossible de modifier la famille !", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

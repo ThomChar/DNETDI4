@@ -14,6 +14,7 @@ namespace Bacchus
     public partial class FormSelectionnerObjModif : Form
     {
         private MagasinDAO magasin;
+        private FormMain formMain;
         private string typeObjet;  //Marque, Famille, Sous-Famille, Article,
 
         public FormSelectionnerObjModif()
@@ -21,9 +22,10 @@ namespace Bacchus
             InitializeComponent();
         }
 
-        public FormSelectionnerObjModif(MagasinDAO magasin, string typeObjet)
+        public FormSelectionnerObjModif(MagasinDAO magasin, string typeObjet, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
             // freeze the size of the screen
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -91,25 +93,25 @@ namespace Bacchus
             {
                 if (typeObjet == "Article")
                 {
-                    FormModifArticle formModifArticle = new FormModifArticle(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    FormModifArticle formModifArticle = new FormModifArticle(magasin, (ObjetComboBox.SelectedItem as dynamic).Value, formMain);
                     formModifArticle.ShowDialog();
                     Close();
                 }
                 else if (typeObjet == "Sous-Famille")
                 {
-                    FormModifSousFamille formModifSousFamille = new FormModifSousFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    FormModifSousFamille formModifSousFamille = new FormModifSousFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value, formMain);
                     formModifSousFamille.ShowDialog();
                     Close();
                 }
                 else if (typeObjet == "Famille")
                 {
-                    FormModifFamille formModifFamille = new FormModifFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    FormModifFamille formModifFamille = new FormModifFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value, formMain);
                     formModifFamille.ShowDialog();
                     Close();
                 }
                 else if (typeObjet == "Marque")
                 {
-                    FormModifMarque formModifMarque = new FormModifMarque(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    FormModifMarque formModifMarque = new FormModifMarque(magasin, (ObjetComboBox.SelectedItem as dynamic).Value, formMain);
                     formModifMarque.ShowDialog();
                     Close();
                 }

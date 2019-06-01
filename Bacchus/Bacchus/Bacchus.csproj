@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\CenterWinDialog.cs" />
     <Compile Include="Controller\ListViewComparer.cs" />
     <Compile Include="Dao\ArticleDao.cs" />
     <Compile Include="Dao\FamilleDao.cs" />

@@ -1,4 +1,5 @@
-﻿using Bacchus.Model;
+﻿using Bacchus.Controller;
+using Bacchus.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,15 +16,17 @@ namespace Bacchus
     public partial class FormAjoutSousFamille : Form
     {
         private MagasinDAO magasin;
+        private FormMain formMain;
 
         public FormAjoutSousFamille()
         {
             InitializeComponent();
         }
 
-        public FormAjoutSousFamille(MagasinDAO magasin)
+        public FormAjoutSousFamille(MagasinDAO magasin, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -43,46 +46,42 @@ namespace Bacchus
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            if (nomTextBox.Text == "ex : Sous-Famille ..." || nomTextBox.Text == "")
-            {
-                MessageBox.Show("Veuillez inscrire un nom valide avant de valider le formulaire de création", "Erreur Générée lors de Création Sous-Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                try
-                {
-                    //Regex rx = new Regex("[À-ŸA-Z]{1}[à-ÿa-z]{0,39}");
-                    Regex rx = new Regex("[a-z]");
-                    Regex rx1 = new Regex("[0-9]");
-                    if (rx.IsMatch(nomTextBox.Text) || rx1.IsMatch(nomTextBox.Text))
-                    {
-                        if (!(familleComboBox.Text == "ex : nomFamille ...") && !(familleComboBox.Text == ""))
-                        {
-                            //Création de l'objet Sous-Famille en Local
-                            SousFamille sousFamille = new SousFamille();
-                            sousFamille.Nom = nomTextBox.Text;
-                            sousFamille.RefFamille = this.magasin.FamilleDao.getFamilleByName(familleComboBox.Text);
+            Regex rx = new Regex("[À-ŸA-Zà-ÿa-z]{1,50}");
+            Regex rx1 = new Regex("[0-9]");
 
-                            //Ajout de la SousFamille dans la Base de donnée
-                            this.magasin.SousFamilleDao.addSousFamille(sousFamille);
-                            Console.WriteLine(this.magasin.ListeSousFamilles.Find(x => x.Nom == sousFamille.Nom && x.RefFamille.Nom == sousFamille.RefFamille.Nom));
-                            //MessageBox.Show("Sous-famille " + sousFamille.ToString() + " a été ajouté", "Succès Création Sous-famille", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            this.Close();
-                        }
-                        else
-                        {
-                            throw new Exception("Veuillez sélectionner un Famille valide dans la combo box (autre que ex : nomFamille ... ou vide)");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
-                    }
-                }
-                catch (Exception ex)
+            try
+            {
+                if (nomTextBox.Text == "ex : Sous-Famille ..." || nomTextBox.Text == "")
+                    throw new Exception("Veuillez inscrire un nom valide avant de valider le formulaire de création");
+                
+                if (!rx.IsMatch(nomTextBox.Text) && !rx1.IsMatch(nomTextBox.Text))
+                    throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
+
+                if ((familleComboBox.Text == "ex : nomFamille ...") || (familleComboBox.Text == ""))
+                    throw new Exception("Veuillez sélectionner un Famille valide dans la combo box (autre que ex : nomFamille ... ou vide)");
+
+                //Création de l'objet Sous-Famille en Local
+                SousFamille sousFamille = new SousFamille();
+                sousFamille.Nom = nomTextBox.Text;
+                sousFamille.RefFamille = this.magasin.FamilleDao.getFamilleByName(familleComboBox.Text);
+
+                //Ajout de la SousFamille dans la Base de donnée
+                this.magasin.SousFamilleDao.addSousFamille(sousFamille);
+
+                // show that the change was successful
+                Console.WriteLine(this.magasin.ListeSousFamilles.Find(x => x.Nom == sousFamille.Nom && x.RefFamille.Nom == sousFamille.RefFamille.Nom));
+                formMain.refreshStatusStrip("La marque " + sousFamille.RefSousFamille + " : " + sousFamille.Nom + " a été ajoutée.");
+
+                formMain.refresh();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                // show error
+                formMain.refreshStatusStrip("Erreur : " + ex.Message);
+                using (new CenterWinDialog(this))
                 {
-                    //ex.GetBaseException();
-                    MessageBox.Show(ex.Message, "Erreur Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Impossible d'ajouter la sous-famille !", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

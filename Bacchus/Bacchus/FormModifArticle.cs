@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Bacchus.Controller;
 using Bacchus.Model;
 
 namespace Bacchus
@@ -15,15 +16,17 @@ namespace Bacchus
     public partial class FormModifArticle : Form
     {
         private MagasinDAO magasin;
+        private FormMain formMain;
 
         public FormModifArticle()
         {
             InitializeComponent();
         }
 
-        public FormModifArticle(MagasinDAO magasin, string refArticle)
+        public FormModifArticle(MagasinDAO magasin, string refArticle, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -69,74 +72,63 @@ namespace Bacchus
 
         private void updateButton_Click(object sender, EventArgs e)
         {
-            if (referenceTextBox.Text == "ex : refArticle ..." || referenceTextBox.Text == "")
+            Regex rx = new Regex("[À-ŸA-Zà-ÿa-z]{1,50}");
+            Regex rx1 = new Regex("[0-9]");
+
+            try
             {
-                MessageBox.Show("Veuillez inscrire une reference d'article valide avant de valider le formulaire de modification", "Erreur Générée lors de modification Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (referenceTextBox.Text == "ex : refArticle ..." || referenceTextBox.Text == "")
+                    throw new Exception("Veuillez inscrire une reference d'article valide avant de valider le formulaire de modification");
+
+                if (descriptionTextBox.Text == "ex : descriptionArticle ..." || descriptionTextBox.Text == "")
+                    throw new Exception("Veuillez inscrire une description valide avant de valider le formulaire de modification");
+
+                    
+                if (!rx.IsMatch(referenceTextBox.Text) && !rx1.IsMatch(referenceTextBox.Text))
+                    throw new Exception("Le format du Champ reference est incorrect (au moins un caractere ou nombre)");
+
+                if (!rx.IsMatch(descriptionTextBox.Text) && !rx1.IsMatch(descriptionTextBox.Text))
+                    throw new Exception("Le format du Champ description est incorrect (au moins un caractere ou nombre)");
+
+                if ((sousFamilleComboBox.Text == "ex : nomSousFamille ...") || (sousFamilleComboBox.Text == ""))
+                    throw new Exception("Veuillez sélectionner une Sous-Famille valide dans la combo box (autre que ex : nomSousFamille ... ou vide)");
+
+
+                if ((marqueComboBox.Text == "ex : nomMarque ...") || (marqueComboBox.Text == ""))
+                    throw new Exception("Veuillez sélectionner une Marque valide dans la combo box (autre que ex : nomMarque ... ou vide)");
+
+                //Reconstruction de l'objet Article en Local avec les modifications
+                Article article = new Article();
+                article.RefArticle = referenceTextBox.Text;
+                article.Description = descriptionTextBox.Text;
+                article.PrixHT = Convert.ToDouble(prixNumericUpDown.Value);
+                article.Quantite = Convert.ToInt32(Math.Round(quantiteNumericUpDown.Value, 0));
+                article.RefMarque = (marqueComboBox.SelectedItem as dynamic).Value;
+
+                //retrouver la sous famille exact à partir de ce qui est dans sousFamilleComboBox
+                char[] delimiterChars = { '(', ')' };
+                string[] sousFamilleBoxContent = sousFamilleComboBox.Text.Split(delimiterChars);
+                int refFamille = this.magasin.FamilleDao.getFamilleByName(sousFamilleBoxContent[1]).RefFamille;
+                article.RefSousFamille = this.magasin.SousFamilleDao.getSousFamilleByNameRefFamille(refFamille, sousFamilleBoxContent[0]);
+                //article.RefSousFamille = (sousFamilleComboBox.SelectedItem as dynamic).Value;
+
+                //Modification de l' Article dans la Base de donnée
+                this.magasin.ArticleDao.updateArticle(article);
+
+                // show that the change was successful
+                Console.WriteLine(this.magasin.ListeArticles.Find(x => x.Description == article.Description && x.RefSousFamille.Nom == article.RefSousFamille.Nom && x.RefSousFamille.RefFamille.RefFamille == article.RefSousFamille.RefFamille.RefFamille && x.RefMarque.Nom == article.RefMarque.Nom));
+                formMain.refreshStatusStrip("L'article " + article.RefArticle + " : " + article.Description + " a été modifié.");
+
+                formMain.refresh();
+                this.Close();
             }
-            else if (descriptionTextBox.Text == "ex : descriptionArticle ..." || descriptionTextBox.Text == "")
+            catch (Exception ex)
             {
-                MessageBox.Show("Veuillez inscrire une description valide avant de valider le formulaire de modification", "Erreur Générée lors de modification Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                try
+                // show error
+                formMain.refreshStatusStrip("Erreur : " + ex.Message);
+                using (new CenterWinDialog(this))
                 {
-                    Regex rx = new Regex("[a-z]");
-                    Regex rx1 = new Regex("[0-9]");
-                    if (rx.IsMatch(referenceTextBox.Text) || rx1.IsMatch(referenceTextBox.Text))
-                    {
-                        if (rx.IsMatch(descriptionTextBox.Text) || rx1.IsMatch(descriptionTextBox.Text))
-                        {
-                            if (!(sousFamilleComboBox.Text == "ex : nomSousFamille ...") && !(sousFamilleComboBox.Text == ""))
-                            {
-                                if (!(marqueComboBox.Text == "ex : nomMarque ...") && !(marqueComboBox.Text == ""))
-                                {
-                                    //Reconstruction de l'objet Article en Local avec les modifications
-                                    Article article = new Article();
-                                    article.RefArticle = referenceTextBox.Text;
-                                    article.Description = descriptionTextBox.Text;
-                                    article.PrixHT = Convert.ToDouble(prixNumericUpDown.Value);
-                                    article.Quantite = Convert.ToInt32(Math.Round(quantiteNumericUpDown.Value, 0));
-                                    article.RefMarque = (marqueComboBox.SelectedItem as dynamic).Value;
-
-                                    //retrouver la sous famille exact à partir de ce qui est dans sousFamilleComboBox
-                                    char[] delimiterChars = { '(', ')' };
-                                    string[] sousFamilleBoxContent = sousFamilleComboBox.Text.Split(delimiterChars);
-                                    int refFamille = this.magasin.FamilleDao.getFamilleByName(sousFamilleBoxContent[1]).RefFamille;
-                                    article.RefSousFamille = this.magasin.SousFamilleDao.getSousFamilleByNameRefFamille(refFamille, sousFamilleBoxContent[0]);
-                                    //article.RefSousFamille = (sousFamilleComboBox.SelectedItem as dynamic).Value;
-
-                                    //Modification de l' Article dans la Base de donnée
-                                    this.magasin.ArticleDao.updateArticle(article);
-
-                                    Console.WriteLine(this.magasin.ListeArticles.Find(x => x.Description == article.Description && x.RefSousFamille.Nom == article.RefSousFamille.Nom && x.RefSousFamille.RefFamille.RefFamille == article.RefSousFamille.RefFamille.RefFamille && x.RefMarque.Nom == article.RefMarque.Nom));
-                                    MessageBox.Show("Article " + article.ToString() + " a été modifié", "Succès Modification Article", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    this.Close();
-                                }
-                                else
-                                {
-                                    throw new Exception("Veuillez sélectionner une Marque valide dans la combo box (autre que ex : nomMarque ... ou vide)");
-                                }
-                            }
-                            else
-                            {
-                                throw new Exception("Veuillez sélectionner une Sous-Famille valide dans la combo box (autre que ex : nomSousFamille ... ou vide)");
-                            }
-                        }
-                        else
-                        {
-                            throw new Exception("Le format du Champ description est incorrect (au moins un caractere ou nombre)");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Le format du Champ reference est incorrect (au moins un caractere ou nombre)");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //ex.GetBaseException();
-                    MessageBox.Show(ex.Message, "Erreur Modification Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Impossible de modifier l'article !", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
