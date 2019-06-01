@@ -25,6 +25,10 @@ namespace Bacchus
             this.magasin = magasin;
             InitializeComponent();
 
+            //this.StartPosition = FormStartPosition.Manual;
+            //this.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (this.Width / 2), (Screen.PrimaryScreen.WorkingArea.Height / 2) - (this.Height / 2));
+
+
             listView.ContextMenuStrip = this.contextMenuStrip1;
 
             // Set the view to show details.
@@ -65,7 +69,24 @@ namespace Bacchus
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            //if (Properties.Settings.Default.F1Size.Width == 0) Properties.Settings.Default.Upgrade();   //optionnel
 
+            if (Properties.Settings.Default.F1Size.Width == 0 || Properties.Settings.Default.F1Size.Height == 0)
+            {
+                this.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (this.Width / 2), (Screen.PrimaryScreen.WorkingArea.Height / 2) - (this.Height / 2));  //ajouter code Rémi pour placer fenetre au depart
+                //// optional: add default values
+            }
+            else
+            {
+                this.WindowState = Properties.Settings.Default.F1State;
+
+                // we don't want a minimized window at startup
+                if (this.WindowState == FormWindowState.Minimized) this.WindowState = FormWindowState.Normal;
+
+                this.Location = Properties.Settings.Default.F1Location;
+                this.Size = Properties.Settings.Default.F1Size;
+            }
+            
         }
 
 
@@ -764,6 +785,25 @@ namespace Bacchus
         }
         #endregion
 
-        
+
+        private void formMain_Closing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.F1State = this.WindowState;
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                // save location and size if the state is normal
+                Properties.Settings.Default.F1Location = this.Location;
+                Properties.Settings.Default.F1Size = this.Size;
+            }
+            else
+            {
+                // save the RestoreBounds if the form is minimized or maximized!
+                Properties.Settings.Default.F1Location = this.RestoreBounds.Location;
+                Properties.Settings.Default.F1Size = this.RestoreBounds.Size;
+            }
+
+            // don't forget to save the settings
+            Properties.Settings.Default.Save();
+        }
     }
 }

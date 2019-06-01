@@ -257,6 +257,7 @@ namespace Bacchus
             this.MinimumSize = new System.Drawing.Size(1000, 400);
             this.Name = "FormMain";
             this.Text = "StoreManager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formMain_Closing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
