@@ -121,7 +121,7 @@ namespace Bacchus.Dao
 
                 if (sqReader.Read())
                 {
-
+                   
                     marque = new Marque(System.Convert.ToInt32(sqReader["RefMarque"]), String.Format("{0}", sqReader["Nom"]));
 
                 }

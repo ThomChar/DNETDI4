@@ -31,17 +31,21 @@
             this.nomTextBox = new System.Windows.Forms.TextBox();
             this.nomFamilleLabel = new System.Windows.Forms.Label();
             this.title_label = new System.Windows.Forms.Label();
-            this.addButton = new System.Windows.Forms.Button();
+            this.updateButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.nomFamilleOriginLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // nomTextBox
             // 
+            this.nomTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nomTextBox.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.nomTextBox.Location = new System.Drawing.Point(88, 62);
             this.nomTextBox.Name = "nomTextBox";
-            this.nomTextBox.Size = new System.Drawing.Size(362, 22);
+            this.nomTextBox.Size = new System.Drawing.Size(362, 24);
             this.nomTextBox.TabIndex = 34;
+            this.nomTextBox.Text = "ex : Famille ...";
+            this.nomTextBox.Enter += new System.EventHandler(this.nomTextBox_Enter);
             // 
             // nomFamilleLabel
             // 
@@ -64,15 +68,15 @@
             this.title_label.Text = "Modification Famille :";
             this.title_label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // addButton
+            // updateButton
             // 
-            this.addButton.Location = new System.Drawing.Point(312, 100);
-            this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(138, 32);
-            this.addButton.TabIndex = 31;
-            this.addButton.Text = "Ajouter";
-            this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            this.updateButton.Location = new System.Drawing.Point(312, 100);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.Size = new System.Drawing.Size(138, 32);
+            this.updateButton.TabIndex = 31;
+            this.updateButton.Text = "Modifier";
+            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
             // cancelButton
             // 
@@ -82,6 +86,7 @@
             this.cancelButton.TabIndex = 30;
             this.cancelButton.Text = "Annuler";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // nomFamilleOriginLabel
             // 
@@ -102,7 +107,7 @@
             this.Controls.Add(this.nomTextBox);
             this.Controls.Add(this.nomFamilleLabel);
             this.Controls.Add(this.title_label);
-            this.Controls.Add(this.addButton);
+            this.Controls.Add(this.updateButton);
             this.Controls.Add(this.cancelButton);
             this.Name = "FormModifFamille";
             this.Text = "Modification Famille";
@@ -116,7 +121,7 @@
         private System.Windows.Forms.TextBox nomTextBox;
         private System.Windows.Forms.Label nomFamilleLabel;
         private System.Windows.Forms.Label title_label;
-        private System.Windows.Forms.Button addButton;
+        private System.Windows.Forms.Button updateButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label nomFamilleOriginLabel;
     }

@@ -49,9 +49,9 @@
             // 
             this.ObjetComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ObjetComboBox.FormattingEnabled = true;
-            this.ObjetComboBox.Location = new System.Drawing.Point(96, 55);
+            this.ObjetComboBox.Location = new System.Drawing.Point(136, 55);
             this.ObjetComboBox.Name = "ObjetComboBox";
-            this.ObjetComboBox.Size = new System.Drawing.Size(457, 24);
+            this.ObjetComboBox.Size = new System.Drawing.Size(417, 24);
             this.ObjetComboBox.TabIndex = 39;
             // 
             // title_label

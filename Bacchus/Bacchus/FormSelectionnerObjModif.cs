@@ -25,6 +25,8 @@ namespace Bacchus
         {
             this.magasin = magasin;
             InitializeComponent();
+            ObjetComboBox.DisplayMember = "Text";
+            ObjetComboBox.ValueMember = "Value";
             if (typeObjet == "Article")
             {
                 this.typeObjet = typeObjet;
@@ -33,7 +35,7 @@ namespace Bacchus
                 // Remplir la combo box avec la liste des Articles
                 foreach (Article art in this.magasin.ListeArticles)
                 {
-                    ObjetComboBox.Items.Add(art.RefArticle + "#" + art.Description);
+                    ObjetComboBox.Items.Add(new { Text = art.RefArticle + "#" + art.Description, Value = art.RefArticle });
                 }
             }
             else if (typeObjet == "Sous-Famille")
@@ -44,7 +46,7 @@ namespace Bacchus
                 // Remplir la combo box avec la liste des Sous-Familles
                 foreach (SousFamille sfm in this.magasin.ListeSousFamilles)
                 {
-                    ObjetComboBox.Items.Add(sfm.Nom + "(" + sfm.RefFamille.Nom + ")");
+                    ObjetComboBox.Items.Add(new { Text = sfm.Nom + "(" + sfm.RefFamille.Nom + ")", Value = sfm });
                 }
             }
             else if (typeObjet == "Famille")
@@ -55,7 +57,7 @@ namespace Bacchus
                 // Remplir la combo box avec la liste des Familles
                 foreach (Famille fm in this.magasin.ListeFamilles)
                 {
-                    ObjetComboBox.Items.Add(fm.Nom);
+                    ObjetComboBox.Items.Add(new { Text = fm.Nom, Value = fm });
                 }
             }
             else if (typeObjet == "Marque")
@@ -66,7 +68,7 @@ namespace Bacchus
                 // Remplir la combo box avec la liste des Articles
                 foreach (Marque mq in this.magasin.ListeMarques)
                 {
-                    ObjetComboBox.Items.Add(mq.Nom);
+                    ObjetComboBox.Items.Add(new { Text = mq.Nom, Value = mq });
                 }
             }
             
@@ -74,39 +76,48 @@ namespace Bacchus
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-
+            this.Close();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
         {
-            if (typeObjet == "Article")
+            if (ObjetComboBox.Text != "")
             {
-                FormModifArticle formModifArticle = new FormModifArticle(magasin, ObjetComboBox.Text);
-                formModifArticle.ShowDialog();
-                Close();
-            }
-            else if (typeObjet == "Sous-Famille")
-            {
-                FormModifSousFamille formModifSousFamille = new FormModifSousFamille(magasin, ObjetComboBox.Text);
-                formModifSousFamille.ShowDialog();
-                Close();
-            }
-            else if (typeObjet == "Famille")
-            {
-                FormModifFamille formModifFamille = new FormModifFamille(magasin, ObjetComboBox.Text);
-                formModifFamille.ShowDialog();
-                Close();
-            }
-            else if (typeObjet == "Marque")
-            {
-                FormModifMarque formModifMarque = new FormModifMarque(magasin, ObjetComboBox.Text);
-                formModifMarque.ShowDialog();
-                Close();
+                if (typeObjet == "Article")
+                {
+                    FormModifArticle formModifArticle = new FormModifArticle(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    formModifArticle.ShowDialog();
+                    Close();
+                }
+                else if (typeObjet == "Sous-Famille")
+                {
+                    FormModifSousFamille formModifSousFamille = new FormModifSousFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    formModifSousFamille.ShowDialog();
+                    Close();
+                }
+                else if (typeObjet == "Famille")
+                {
+                    FormModifFamille formModifFamille = new FormModifFamille(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    formModifFamille.ShowDialog();
+                    Close();
+                }
+                else if (typeObjet == "Marque")
+                {
+                    FormModifMarque formModifMarque = new FormModifMarque(magasin, (ObjetComboBox.SelectedItem as dynamic).Value);
+                    formModifMarque.ShowDialog();
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show("Veuillez selectionner un objet à modifier avant d'appuyer sur le bouton Modifier", "Erreur Gestionnaire Modifier", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
             }
             else
             {
                 MessageBox.Show("Veuillez selectionner un objet à modifier avant d'appuyer sur le bouton Modifier", "Erreur Gestionnaire Modifier", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            
         }
     }
 }
