@@ -52,14 +52,8 @@ namespace Bacchus
             this.listView.ColumnClick += new ColumnClickEventHandler(listView_ColumnClick);
             this.listView.DoubleClick += new EventHandler(this.listView_DoubleClick);
 
-           // this.listView. += new MouseEventArgs(listView_MouseUp);
-
-
             this.KeyPreview = true;
-
-            //this.KeyDown += new KeyEventHandler(Form_KeyDown);
             this.KeyDown += new KeyEventHandler(Form_KeyDown);
-            //this.KeyUp += new KeyEventHandler(this.Form_KeyDown);
         }
 
         public MagasinDAO MagasinDAO
@@ -95,7 +89,9 @@ namespace Bacchus
 
         private void fichierToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Console.WriteLine(sender.ToString());
+            Console.WriteLine(e.ToString());
+            refreshStatusStrip("Maximiser la taille de la form");
         }
 
         #region treeView
@@ -152,7 +148,7 @@ namespace Bacchus
                 item.SubItems.Add(article.Description); // description
                 item.SubItems.Add(article.RefSousFamille.RefFamille.Nom + " - " + article.RefSousFamille.Nom); // family name and subfamily name
                 item.SubItems.Add(article.RefMarque.Nom); // brand name
-                item.SubItems.Add(article.PrixHT.ToString() + " €"); // price
+                item.SubItems.Add(article.PrixHT.ToString("0.00") + " €"); // price
                 item.SubItems.Add(article.Quantite.ToString()); // quantity
                 listView.Items.Add(item);
             }
@@ -312,6 +308,81 @@ namespace Bacchus
             updateObject();
         }
 
+        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Boolean objectSelected = false;
+
+            // get selected node of treeview
+            String selectedNodeText = treeView1.SelectedNode.Text;
+            //Console.WriteLine("selectedNodeText:"+ selectedNodeText);
+
+            // get selected item
+            ListView.SelectedListViewItemCollection itemSelected = this.listView.SelectedItems;
+
+            // action on item
+            switch (selectedNodeText)
+            {
+                case "Articles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Article article = listView.SelectedItems[0].Tag as Article;
+                        if (article != null)
+                        {
+                            objectSelected = true;
+                        }
+
+                    }
+                    break;
+                case "Familles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Famille family = listView.SelectedItems[0].Tag as Famille;
+                        if (family != null)
+                        {
+                            objectSelected = true;
+                        }
+
+                    }
+                    break;
+                case "Sous familles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
+                        if (subFamily != null)
+                        {
+                            objectSelected = true;
+                        }
+                    }
+                    break;
+                case "Marques":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Marque brand = listView.SelectedItems[0].Tag as Marque;
+                        if (brand != null)
+                        {
+                            objectSelected = true;
+                        }
+                    }
+                    break;
+            }
+
+
+            if (objectSelected == true)
+            {
+                contextMenuStrip1.Items[2].Enabled = true;
+                contextMenuStrip1.Items[2].ToolTipText = null;
+                contextMenuStrip1.Items[3].Enabled = true;
+                contextMenuStrip1.Items[3].ToolTipText = null;
+            }
+            else
+            {
+                contextMenuStrip1.Items[2].Enabled = false;
+                contextMenuStrip1.Items[2].ToolTipText = "Aucun objet selectionné !";
+                contextMenuStrip1.Items[3].Enabled = false;
+                contextMenuStrip1.Items[3].ToolTipText = "Aucun objet selectionné !";
+            }
+        }
+
         private void supprimerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             removeObject();
@@ -461,13 +532,13 @@ namespace Bacchus
             //Console.WriteLine("selectedNodeText:"+ selectedNodeText);
 
             // get selected item
-            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
+            ListView.SelectedListViewItemCollection itemSelected = this.listView.SelectedItems;
 
             // action on item
             switch (selectedNodeText)
             {
                 case "Articles":
-                    foreach (ListViewItem item in breakfast)
+                    foreach (ListViewItem item in itemSelected)
                     {
                         Article article = listView.SelectedItems[0].Tag as Article;
                         if (article != null)
@@ -481,7 +552,7 @@ namespace Bacchus
                     }
                     break;
                 case "Familles":
-                    foreach (ListViewItem item in breakfast)
+                    foreach (ListViewItem item in itemSelected)
                     {
                         Famille family = listView.SelectedItems[0].Tag as Famille;
                         if (family != null)
@@ -495,7 +566,7 @@ namespace Bacchus
                     }
                     break;
                 case "Sous familles":
-                    foreach (ListViewItem item in breakfast)
+                    foreach (ListViewItem item in itemSelected)
                     {
                         SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
                         if (subFamily != null)
@@ -508,7 +579,7 @@ namespace Bacchus
                     }
                     break;
                 case "Marques":
-                    foreach (ListViewItem item in breakfast)
+                    foreach (ListViewItem item in itemSelected)
                     {
                         Marque brand = listView.SelectedItems[0].Tag as Marque;
                         if (brand != null)
@@ -533,7 +604,7 @@ namespace Bacchus
             String selectedNodeText = treeView1.SelectedNode.Text;
 
             // get selected item
-            ListView.SelectedListViewItemCollection breakfast = this.listView.SelectedItems;
+            ListView.SelectedListViewItemCollection itemSelected = this.listView.SelectedItems;
 
             try
             {
@@ -541,7 +612,7 @@ namespace Bacchus
                 switch (selectedNodeText)
                 {
                     case "Articles":
-                        foreach (ListViewItem item in breakfast)
+                        foreach (ListViewItem item in itemSelected)
                         {
                             Article article = listView.SelectedItems[0].Tag as Article;
                             if (article != null)
@@ -566,7 +637,7 @@ namespace Bacchus
                         }
                         break;
                     case "Familles":
-                        foreach (ListViewItem item in breakfast)
+                        foreach (ListViewItem item in itemSelected)
                         {
                             Famille family = listView.SelectedItems[0].Tag as Famille;
                             if (family != null)
@@ -606,7 +677,7 @@ namespace Bacchus
                         }
                         break;
                     case "Sous familles":
-                        foreach (ListViewItem item in breakfast)
+                        foreach (ListViewItem item in itemSelected)
                         {
                             SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
                             if (subFamily != null)
@@ -643,7 +714,7 @@ namespace Bacchus
                         }
                         break;
                     case "Marques":
-                        foreach (ListViewItem item in breakfast)
+                        foreach (ListViewItem item in itemSelected)
                         {
                             Marque brand = listView.SelectedItems[0].Tag as Marque;
                             if (brand != null)
@@ -692,5 +763,7 @@ namespace Bacchus
 
         }
         #endregion
+
+        
     }
 }

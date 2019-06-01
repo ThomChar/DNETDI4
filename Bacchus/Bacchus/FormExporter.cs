@@ -29,6 +29,12 @@ namespace Bacchus
             this.magasin = magasin;
             this.nbArticlesExport = 0;
             InitializeComponent();
+
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
         private void csvFileNameLabel_Click(object sender, EventArgs e)

@@ -27,6 +27,13 @@ namespace Bacchus
             this.magasin = magasin;
             this.marque = marque;
             InitializeComponent();
+
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
+
             this.nomMarqueOriginLabel.Text = marque.Nom;
             this.nomTextBox.Text = marque.Nom;
         }

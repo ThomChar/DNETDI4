@@ -27,6 +27,13 @@ namespace Bacchus
             this.magasin = magasin;
             this.famille = famille;
             InitializeComponent();
+
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
+
             nomFamilleOriginLabel.Text = famille.Nom;
             this.nomTextBox.Text = famille.Nom;
         }

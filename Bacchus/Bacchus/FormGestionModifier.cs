@@ -24,6 +24,12 @@ namespace Bacchus
         {
             this.magasin = magasin;
             InitializeComponent();
+
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
         }
 
         private void updateButton_Click(object sender, EventArgs e)

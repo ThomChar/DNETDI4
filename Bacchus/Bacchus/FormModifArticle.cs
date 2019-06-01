@@ -25,6 +25,13 @@ namespace Bacchus
         {
             this.magasin = magasin;
             InitializeComponent();
+
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
+
             sousFamilleComboBox.DisplayMember = "Text";
             sousFamilleComboBox.ValueMember = "Value";
             marqueComboBox.DisplayMember = "Text";

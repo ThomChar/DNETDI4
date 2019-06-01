@@ -26,6 +26,12 @@ namespace Bacchus
             this.magasin = magasin;
             InitializeComponent();
 
+            // freeze the size of the screen
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            // center form
+            this.StartPosition = FormStartPosition.CenterParent;
+
             // Affectation d'un élément de la combo box à ex : nomSousFamille ... permettant la detection de cette box comme vide
             sousFamilleComboBox.Items.Add("ex : nomSousFamille ...");
             // Remplir la combo box avec la liste des Sous-Familles
