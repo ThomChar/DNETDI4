@@ -9,7 +9,6 @@ namespace Bacchus
 {
     public partial class FormMain : Form
     {
-        internal System.Windows.Forms.ListBox ListBox1;
         private MagasinDAO magasin;
 
         // The column we are currently using for sorting.
@@ -25,9 +24,7 @@ namespace Bacchus
             this.magasin = magasin;
             InitializeComponent();
 
-            //this.StartPosition = FormStartPosition.Manual;
-            //this.Location = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (this.Width / 2), (Screen.PrimaryScreen.WorkingArea.Height / 2) - (this.Height / 2));
-
+            this.SizeChanged += new EventHandler(this.FormMain_Resize);
 
             listView.ContextMenuStrip = this.contextMenuStrip1;
 
@@ -409,7 +406,7 @@ namespace Bacchus
             removeObject();
         }
 
-        private void refreshStatusStrip(String text)
+        public void refreshStatusStrip(String text)
         {
             toolStripStatusLabel1.Text = text;
             statusStrip1.Font = new Font("Arial", 9, FontStyle.Regular);
@@ -476,29 +473,48 @@ namespace Bacchus
             // Sort.
             listView.Sort();
         }
+
+        /**
+         * Change size of formMain
+         **/
+        private void FormMain_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                refreshStatusStrip("La fênetre a été réduite !");
+            }
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                refreshStatusStrip("La dimension de la fenêtre a été maximisée !");
+            }
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                refreshStatusStrip("La dimension de la fênetre a été minimisée !");
+            }
+        }
         #endregion
 
         #region menu
-        private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
+       private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
+            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin, this);
             formGestionAjouter.ShowDialog();
         }
 
         private void modifierToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
+            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin, this);
             formGestionModifier.ShowDialog();
         }
         private void ajouterToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin);
+            FormGestionAjouter formGestionAjouter = new FormGestionAjouter(magasin, this);
             formGestionAjouter.ShowDialog();
         }
 
         private void modifierToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin);
+            FormGestionModifier formGestionModifier = new FormGestionModifier(magasin, this);
             formGestionModifier.ShowDialog();
         }
         #endregion
@@ -518,29 +534,28 @@ namespace Bacchus
                 case "Articles":
                     Console.WriteLine("Add product");
                     refreshStatusStrip("Ajout d'un produit.");
-                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin);
+                    FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin, this);
                     formAjoutArticle.ShowDialog();
                     break;
                 case "Familles":
                     Console.WriteLine("Add subfamily");
                     refreshStatusStrip("Ajout d'une famille.");
-                    FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin);
+                    FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin, this);
                     formAjoutFamille.ShowDialog();
                     break;
                 case "Sous familles":
                     Console.WriteLine("Add family");
                     refreshStatusStrip("Ajout d'une sous-famille.");
-                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin);
+                    FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin, this);
                     formAjoutSousFamille.ShowDialog();
                     break;
                 case "Marques":
                     Console.WriteLine("Add brand");
                     refreshStatusStrip("Ajout d'une marque.");
-                    FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin);
+                    FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin, this);
                     formAjoutMarque.ShowDialog();
                     break;
             }
-            refresh();
         }
 
         /**
@@ -565,8 +580,8 @@ namespace Bacchus
                         if (article != null)
                         {
                             Console.WriteLine("update article " + article.RefArticle + " : " + article.Description);
-                            refreshStatusStrip("Modifier l'article " + article.RefArticle + " : " + article.Description + ".");
-                            FormModifArticle formUpdateArticle = new FormModifArticle(magasin, article.RefArticle);
+                            refreshStatusStrip("Modification de l'article " + article.RefArticle + " : " + article.Description + ".");
+                            FormModifArticle formUpdateArticle = new FormModifArticle(magasin, article.RefArticle, this);
                             formUpdateArticle.ShowDialog();
                         }
 
@@ -579,8 +594,8 @@ namespace Bacchus
                         if (family != null)
                         {
                             Console.WriteLine("update family " + family.RefFamille + ": " + family.Nom);
-                            refreshStatusStrip("Modifier la famille " + family.RefFamille + ": " + family.Nom + ".");
-                            FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family);    //Modification pour adaptation code thomas anciennement "family.RefFamille.ToString()"
+                            refreshStatusStrip("Modification de  la famille " + family.RefFamille + ": " + family.Nom + ".");
+                            FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family, this);
                             formUpdateFamily.ShowDialog();
                         }
 
@@ -593,8 +608,8 @@ namespace Bacchus
                         if (subFamily != null)
                         {
                             Console.WriteLine("update subfamily " + subFamily.RefSousFamille + ": " + subFamily.Nom);
-                            refreshStatusStrip("Modifier la sous-famille " + subFamily.RefSousFamille + ": " + subFamily.Nom + ".");
-                            FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily); //Modification pour adaptation code thomas anciennement "subFamily.ToString()"
+                            refreshStatusStrip("Modification de la sous-famille " + subFamily.RefSousFamille + ": " + subFamily.Nom + ".");
+                            FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily, this);
                             formUpdateSubFamily.ShowDialog();
                         }
                     }
@@ -606,14 +621,13 @@ namespace Bacchus
                         if (brand != null)
                         {
                             Console.WriteLine("update brand " + brand.RefMarque + ": " + brand.Nom);
-                            refreshStatusStrip("Modifier la marque " + brand.RefMarque + ": " + brand.Nom + ".");
-                            FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand); //Modification pour adaptation code thomas anciennement "brand.RefMarque.ToString()"
+                            refreshStatusStrip("Modification de la marque " + brand.RefMarque + ": " + brand.Nom + ".");
+                            FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand, this);
                             formUpdateBrand.ShowDialog();
                         }
                     }
                     break;
             }
-            refresh();
         }
 
         /**
@@ -627,21 +641,22 @@ namespace Bacchus
             // get selected item
             ListView.SelectedListViewItemCollection itemSelected = this.listView.SelectedItems;
 
-            try
+
+            // action on item
+            switch (selectedNodeText)
             {
-                // action on item
-                switch (selectedNodeText)
-                {
-                    case "Articles":
-                        foreach (ListViewItem item in itemSelected)
+                case "Articles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Article article = listView.SelectedItems[0].Tag as Article;
+                        if (article != null)
                         {
-                            Article article = listView.SelectedItems[0].Tag as Article;
-                            if (article != null)
+                            Console.WriteLine("remove article " + article.RefArticle + " : " + article.Description);
+                            using (new CenterWinDialog(this))
                             {
-                                Console.WriteLine("remove article " + article.RefArticle + " : " + article.Description);
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer l'article " + article.RefArticle + " : " + article.Description + " ?",
-                                         "Confirmation de suppression",
-                                         MessageBoxButtons.YesNo);
+                                        "Confirmation de suppression",
+                                        MessageBoxButtons.YesNo);
 
                                 if (confirmResult == DialogResult.Yes)
                                 {
@@ -656,31 +671,37 @@ namespace Bacchus
                                 }
                             }
                         }
-                        break;
-                    case "Familles":
-                        foreach (ListViewItem item in itemSelected)
+                    }
+                    break;
+                case "Familles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Famille family = listView.SelectedItems[0].Tag as Famille;
+                        if (family != null)
                         {
-                            Famille family = listView.SelectedItems[0].Tag as Famille;
-                            if (family != null)
+                            Console.WriteLine("remove family " + family.RefFamille + " : " + family.Nom);
+                            using (new CenterWinDialog(this))
                             {
-                                Console.WriteLine("remove family " + family.RefFamille + " : " + family.Nom);
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
-                                         "Confirmation de suppression",
-                                         MessageBoxButtons.YesNo);
+                                        "Confirmation de suppression",
+                                        MessageBoxButtons.YesNo);
                                 if (confirmResult == DialogResult.Yes)
                                 {
                                     int nbArticles = magasin.getArticlesByFamily(family.RefFamille).Count;
                                     int nbSubFamilies = magasin.getSubFamiliesByFamily(family.RefFamille).Count;
                                     if (nbArticles > 0 || nbSubFamilies > 0)
                                     {
-                                        var confirmDelete = MessageBox.Show("La famille compte " + nbSubFamilies + " sous-famille(s) et " +
-                                             nbArticles + " article(s). Cette opération supprimera ces sous-familles et ces articles. Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
-                                         "Attention, suppression en cascade !!!",
-                                         MessageBoxButtons.YesNo);
-                                        if (confirmDelete != DialogResult.Yes)
+                                        using (new CenterWinDialog(this))
                                         {
-                                            Console.WriteLine("removal canceled");
-                                            break;
+                                            var confirmDelete = MessageBox.Show("La famille compte " + nbSubFamilies + " sous-famille(s) et " +
+                                                nbArticles + " article(s). Cette opération supprimera ces sous-familles et ces articles. Voullez-vous vraiment supprimer la famille " + family.RefFamille + " : " + family.Nom + " ?",
+                                                "Attention, suppression en cascade !!!",
+                                                MessageBoxButtons.YesNo);
+                                            if (confirmDelete != DialogResult.Yes)
+                                            {
+                                                Console.WriteLine("removal canceled");
+                                                break;
+                                            }
                                         }
                                     }
 
@@ -694,31 +715,37 @@ namespace Bacchus
                                     Console.WriteLine("removal canceled");
                                 }
                             }
-
                         }
-                        break;
-                    case "Sous familles":
-                        foreach (ListViewItem item in itemSelected)
+
+                    }
+                    break;
+                case "Sous familles":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
+                        if (subFamily != null)
                         {
-                            SousFamille subFamily = listView.SelectedItems[0].Tag as SousFamille;
-                            if (subFamily != null)
+                            Console.WriteLine("remove subFamily " + subFamily.RefFamille + " : " + subFamily.Nom);
+                            using (new CenterWinDialog(this))
                             {
-                                Console.WriteLine("remove subFamily " + subFamily.RefFamille + " : " + subFamily.Nom);
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  sous-famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
-                                         "Confirmation de suppression",
-                                         MessageBoxButtons.YesNo);
+                                        "Confirmation de suppression",
+                                        MessageBoxButtons.YesNo);
                                 if (confirmResult == DialogResult.Yes)
                                 {
                                     int nbArticles = magasin.getArticlesBySubFamily(subFamily.RefSousFamille).Count;
                                     if (nbArticles > 0)
                                     {
-                                        var confirmDelete = MessageBox.Show("La famille compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la sous famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
-                                         "Attention, suppression en cascade !!!",
-                                         MessageBoxButtons.YesNo);
-                                        if (confirmDelete != DialogResult.Yes)
+                                        using (new CenterWinDialog(this))
                                         {
-                                            Console.WriteLine("removal canceled");
-                                            break;
+                                            var confirmDelete = MessageBox.Show("La famille compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la sous famille " + subFamily.RefFamille + " : " + subFamily.Nom + " ?",
+                                                "Attention, suppression en cascade !!!",
+                                                MessageBoxButtons.YesNo);
+                                            if (confirmDelete != DialogResult.Yes)
+                                            {
+                                                Console.WriteLine("removal canceled");
+                                                break;
+                                            }
                                         }
                                     }
 
@@ -733,29 +760,35 @@ namespace Bacchus
                                 }
                             }
                         }
-                        break;
-                    case "Marques":
-                        foreach (ListViewItem item in itemSelected)
+                    }
+                    break;
+                case "Marques":
+                    foreach (ListViewItem item in itemSelected)
+                    {
+                        Marque brand = listView.SelectedItems[0].Tag as Marque;
+                        if (brand != null)
                         {
-                            Marque brand = listView.SelectedItems[0].Tag as Marque;
-                            if (brand != null)
+                            Console.WriteLine("remove brand " + brand.RefMarque + " : " + brand.Nom);
+                            using (new CenterWinDialog(this))
                             {
-                                Console.WriteLine("remove brand " + brand.RefMarque + " : " + brand.Nom);
                                 var confirmResult = MessageBox.Show("Voullez-vous vraiment supprimer la  marque " + brand.RefMarque + " : " + brand.Nom + " ?",
-                                         "Confirmation de suppression",
-                                         MessageBoxButtons.YesNo);
+                                        "Confirmation de suppression",
+                                        MessageBoxButtons.YesNo);
                                 if (confirmResult == DialogResult.Yes)
                                 {
                                     int nbArticles = magasin.getArticlesByBrand(brand.RefMarque).Count;
                                     if (nbArticles > 0)
                                     {
-                                        var confirmDelete = MessageBox.Show("La marque compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la marque " + brand.RefMarque + " : " + brand.Nom + " ?",
-                                         "Attention, suppression en cascade !!!",
-                                         MessageBoxButtons.YesNo);
-                                        if (confirmDelete != DialogResult.Yes)
+                                        using (new CenterWinDialog(this))
                                         {
-                                            Console.WriteLine("removal canceled");
-                                            break;
+                                            var confirmDelete = MessageBox.Show("La marque compte " + nbArticles + " article(s). Cette opération supprimera ces articles. Voullez-vous vraiment supprimer la marque " + brand.RefMarque + " : " + brand.Nom + " ?",
+                                                "Attention, suppression en cascade !!!",
+                                                MessageBoxButtons.YesNo);
+                                            if (confirmDelete != DialogResult.Yes)
+                                            {
+                                                Console.WriteLine("removal canceled");
+                                                break;
+                                            }
                                         }
                                     }
 
@@ -770,16 +803,11 @@ namespace Bacchus
                                 }
                             }
                         }
-                        break;
-                    default:
-                        Console.WriteLine("nothing selected");
-                        break;
-                }
-            }
-            catch (InvalidCastException e)
-            {
-                // Impossible deletion
-                MessageBox.Show(e.Message, "Suppression Imppossible");
+                    }
+                    break;
+                default:
+                    Console.WriteLine("nothing selected");
+                    break;
             }
 
         }

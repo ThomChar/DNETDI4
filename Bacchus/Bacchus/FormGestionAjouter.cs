@@ -14,15 +14,17 @@ namespace Bacchus
     public partial class FormGestionAjouter : Form
     {
         private MagasinDAO magasin;
+        private FormMain formMain;
 
         public FormGestionAjouter()
         {
             InitializeComponent();
         }
 
-        public FormGestionAjouter(MagasinDAO magasin)
+        public FormGestionAjouter(MagasinDAO magasin, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -43,25 +45,25 @@ namespace Bacchus
             if (objectComboBox.Text == "Article"){
                 //this.Close();
 
-                FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin);
+                FormAjoutArticle formAjoutArticle = new FormAjoutArticle(magasin, formMain);
                 formAjoutArticle.ShowDialog();
                 Close();
             }
             else if (objectComboBox.Text == "Sous-Famille")
             {
-                FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin);
+                FormAjoutSousFamille formAjoutSousFamille = new FormAjoutSousFamille(magasin, formMain);
                 formAjoutSousFamille.ShowDialog();
                 Close();
             }
             else if (objectComboBox.Text == "Famille")
             {
-                FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin);
+                FormAjoutFamille formAjoutFamille = new FormAjoutFamille(magasin, formMain);
                 formAjoutFamille.ShowDialog();
                 Close();
             }
             else if (objectComboBox.Text == "Marque")
             {
-                FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin);
+                FormAjoutMarque formAjoutMarque = new FormAjoutMarque(magasin, formMain);
                 formAjoutMarque.ShowDialog();
                 Close();
             }

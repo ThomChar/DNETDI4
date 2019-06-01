@@ -14,15 +14,17 @@ namespace Bacchus
     public partial class FormGestionModifier : Form
     {
         private MagasinDAO magasin;
+        private FormMain formMain;
 
         public FormGestionModifier()
         {
             InitializeComponent();
         }
 
-        public FormGestionModifier(MagasinDAO magasin)
+        public FormGestionModifier(MagasinDAO magasin, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -60,7 +62,7 @@ namespace Bacchus
             }*/
             if (objectComboBox.Text != "")
             {
-                FormSelectionnerObjModif formSelectionnerObjModif = new FormSelectionnerObjModif(magasin, objectComboBox.Text);
+                FormSelectionnerObjModif formSelectionnerObjModif = new FormSelectionnerObjModif(magasin, objectComboBox.Text, formMain);
                 formSelectionnerObjModif.ShowDialog();
                 Close();
 

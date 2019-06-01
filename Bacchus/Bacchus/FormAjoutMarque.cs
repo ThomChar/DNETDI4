@@ -1,4 +1,5 @@
-﻿using Bacchus.Model;
+﻿using Bacchus.Controller;
+using Bacchus.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,15 +17,17 @@ namespace Bacchus
     {
 
         private MagasinDAO magasin;
+        private FormMain formMain;
 
         public FormAjoutMarque()
         {
             InitializeComponent();
         }
 
-        public FormAjoutMarque(MagasinDAO magasin )
+        public FormAjoutMarque(MagasinDAO magasin, FormMain formMain)
         {
             this.magasin = magasin;
+            this.formMain = formMain;
             InitializeComponent();
 
             // freeze the size of the screen
@@ -36,35 +39,39 @@ namespace Bacchus
 
         private void addButton_Click(object sender, EventArgs e)
         {
-            if (nomTextBox.Text == "ex : Marque ..." || nomTextBox.Text == "")
+            Regex rx = new Regex("[À-ŸA-Zà-ÿa-z]{1,50}");
+            Regex rx1 = new Regex("[0-9]");
+
+            try
             {
-                MessageBox.Show("Veuillez inscrire un nom valide avant de valider le formulaire de création", "Erreur Générée lors de Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (nomTextBox.Text == "ex : Marque ..." || nomTextBox.Text == "")
+                    throw new Exception("Veuillez inscrire un nom valide avant de valider le formulaire de création");
+
+                if (!rx.IsMatch(nomTextBox.Text) && !rx1.IsMatch(nomTextBox.Text))
+                    throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
+
+                //Création de l'objet Marque en Local
+                Marque marque = new Marque();
+                marque.Nom = nomTextBox.Text;
+
+                //Ajout de la marque dans la Base de donnée
+                this.magasin.MarqueDao.addMarque(marque);
+
+                // show that the adding was successful
+                Console.WriteLine(this.magasin.ListeMarques.Find(x => x.Nom == marque.Nom));
+                formMain.refreshStatusStrip("La marque " + marque.RefMarque + " : " + marque.Nom + " a été ajoutée.");
+
+                formMain.refresh();
+                this.Close();
+
             }
-            else
+            catch (Exception ex)
             {
-                try
+                // show error
+                formMain.refreshStatusStrip("Erreur : " + ex.Message);
+                using (new CenterWinDialog(this))
                 {
-                    //Regex rx = new Regex("[À-ŸA-Z]{1}[à-ÿa-z]{0,39}");
-                    Regex rx = new Regex("[a-z]");
-                    Regex rx1 = new Regex("[0-9]");
-
-                    if (rx.IsMatch(nomTextBox.Text) || rx1.IsMatch(nomTextBox.Text))
-                    {
-                        //Création de l'objet Marque en Local
-                        Marque marque = new Marque();
-                        marque.Nom = nomTextBox.Text;
-                        //Ajout de la marque dans la Base de donnée
-                        this.magasin.MarqueDao.addMarque(marque);
-
-                        Console.WriteLine(this.magasin.ListeMarques.Find(x => x.Nom == marque.Nom));
-                        //MessageBox.Show("Marque " + marque.Nom + " a été ajouté", "Succès Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    } else{
-                        throw new Exception("Le format du Champ nom est incorrect (au moins un caractere ou nombre)");
-                    }
-                }catch(Exception ex){
-                    //ex.GetBaseException();
-                    MessageBox.Show(ex.Message, "Erreur Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Impossible d'ajouter la marque !", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
