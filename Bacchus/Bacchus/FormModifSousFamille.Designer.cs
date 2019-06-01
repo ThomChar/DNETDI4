@@ -33,7 +33,7 @@
             this.nomTextBox = new System.Windows.Forms.TextBox();
             this.nomFamilleLabel = new System.Windows.Forms.Label();
             this.title_label = new System.Windows.Forms.Label();
-            this.addButton = new System.Windows.Forms.Button();
+            this.updateButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.nomSousFamilleOriginLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -50,17 +50,20 @@
             // 
             // familleComboBox
             // 
+            this.familleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.familleComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.familleComboBox.FormattingEnabled = true;
             this.familleComboBox.Location = new System.Drawing.Point(102, 105);
             this.familleComboBox.Name = "familleComboBox";
-            this.familleComboBox.Size = new System.Drawing.Size(484, 24);
+            this.familleComboBox.Size = new System.Drawing.Size(484, 26);
             this.familleComboBox.TabIndex = 32;
             // 
             // nomTextBox
             // 
+            this.nomTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nomTextBox.Location = new System.Drawing.Point(102, 62);
             this.nomTextBox.Name = "nomTextBox";
-            this.nomTextBox.Size = new System.Drawing.Size(484, 22);
+            this.nomTextBox.Size = new System.Drawing.Size(484, 24);
             this.nomTextBox.TabIndex = 31;
             // 
             // nomFamilleLabel
@@ -84,15 +87,15 @@
             this.title_label.Text = "Modification Sous-Famille :";
             this.title_label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // addButton
+            // updateButton
             // 
-            this.addButton.Location = new System.Drawing.Point(448, 150);
-            this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(138, 32);
-            this.addButton.TabIndex = 28;
-            this.addButton.Text = "Ajouter";
-            this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            this.updateButton.Location = new System.Drawing.Point(448, 150);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.Size = new System.Drawing.Size(138, 32);
+            this.updateButton.TabIndex = 28;
+            this.updateButton.Text = "Modifier";
+            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
             // cancelButton
             // 
@@ -102,12 +105,13 @@
             this.cancelButton.TabIndex = 27;
             this.cancelButton.Text = "Annuler";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // nomSousFamilleOriginLabel
             // 
             this.nomSousFamilleOriginLabel.AutoSize = true;
             this.nomSousFamilleOriginLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nomSousFamilleOriginLabel.Location = new System.Drawing.Point(283, 14);
+            this.nomSousFamilleOriginLabel.Location = new System.Drawing.Point(283, 13);
             this.nomSousFamilleOriginLabel.Name = "nomSousFamilleOriginLabel";
             this.nomSousFamilleOriginLabel.Size = new System.Drawing.Size(141, 20);
             this.nomSousFamilleOriginLabel.TabIndex = 36;
@@ -124,7 +128,7 @@
             this.Controls.Add(this.nomTextBox);
             this.Controls.Add(this.nomFamilleLabel);
             this.Controls.Add(this.title_label);
-            this.Controls.Add(this.addButton);
+            this.Controls.Add(this.updateButton);
             this.Controls.Add(this.cancelButton);
             this.Name = "FormModifSousFamille";
             this.Text = "Modification SousFamille";
@@ -140,7 +144,7 @@
         private System.Windows.Forms.TextBox nomTextBox;
         private System.Windows.Forms.Label nomFamilleLabel;
         private System.Windows.Forms.Label title_label;
-        private System.Windows.Forms.Button addButton;
+        private System.Windows.Forms.Button updateButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label nomSousFamilleOriginLabel;
     }

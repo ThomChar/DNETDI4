@@ -15,17 +15,20 @@ namespace Bacchus
     public partial class FormModifMarque : Form
     {
         private MagasinDAO magasin;
+        private Marque marque;
 
         public FormModifMarque()
         {
             InitializeComponent();
         }
 
-        public FormModifMarque(MagasinDAO magasin, string nomMarque)
+        public FormModifMarque(MagasinDAO magasin, Marque marque)
         {
             this.magasin = magasin;
+            this.marque = marque;
             InitializeComponent();
-            this.nomMarqueOriginLabel.Text = nomMarque; 
+            this.nomMarqueOriginLabel.Text = marque.Nom;
+            this.nomTextBox.Text = marque.Nom;
         }
 
         
@@ -58,20 +61,28 @@ namespace Bacchus
                     //Regex rx = new Regex("[À-ŸA-Z]{1}[à-ÿa-z]{0,39}");
                     Regex rx = new Regex("[a-z]");
                     Regex rx1 = new Regex("[0-9]");
-
                     if (rx.IsMatch(nomTextBox.Text) || rx1.IsMatch(nomTextBox.Text))
                     {
                         //recuperation de l'ancienne Marque
-                        Marque originMarque = this.magasin.MarqueDao.getMarqueByName(nomMarqueOriginLabel.Text);
+                        //Marque originMarque = this.magasin.MarqueDao.getMarqueByName(nomMarqueOriginLabel.Text);
+                        /*Marque m = this.magasin.MarqueDao.getMarqueByName(nomTextBox.Text);
+                        Console.WriteLine(m.ToString());*/
+                        if (this.magasin.MarqueDao.getMarqueByName(nomTextBox.Text)== null)
+                        {
+                            //mise à jour de l'objet Marque en Local
+                            marque.Nom = nomTextBox.Text;
+                            //Modification de la marque dans la Base de donnée
+                            this.magasin.MarqueDao.updateMarque(marque);
 
-                        //mise à jour de l'objet Marque en Local
-                        originMarque.Nom = nomTextBox.Text;
-                        //Ajout de la marque dans la Base de donnée
-                        this.magasin.MarqueDao.updateMarque(originMarque);
-
-                        Console.WriteLine(this.magasin.ListeMarques.Find(x => x.RefMarque == originMarque.RefMarque));
-                        MessageBox.Show("Marque " + nomMarqueOriginLabel + " a été modifié, son nouveau nom est ", "Succès Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
+                            Console.WriteLine(this.magasin.ListeMarques.Find(x => x.RefMarque == marque.RefMarque));
+                            MessageBox.Show("Marque " + nomMarqueOriginLabel.ToString() + " a été modifié, son nouveau nom est "+marque.Nom, "Succès Création Marque", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            this.Close();
+                        }
+                        else
+                        {
+                            throw new Exception("Une marque possède déjà ce nom, veuillez en chosir un autre (au moins un caractere ou nombre)");
+                        }
+                        
                     }
                     else
                     {

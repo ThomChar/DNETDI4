@@ -50,7 +50,7 @@ namespace Bacchus
                 MessageBox.Show("Veuillez inscrire une reference d'article valide avant de valider le formulaire de création", "Erreur Générée lors de Création Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }else if (descriptionTextBox.Text == "ex : descriptionArticle ..." || descriptionTextBox.Text == "")
             {
-                MessageBox.Show("Veuillez inscrire une description valide avant de valider le formulaire de création", "Erreur Générée lors de Création Sous-Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Veuillez inscrire une description valide avant de valider le formulaire de création", "Erreur Générée lors de Création Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace Bacchus
                 catch (Exception ex)
                 {
                     //ex.GetBaseException();
-                    MessageBox.Show(ex.Message, "Erreur Création Famille", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Erreur Création Article", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

@@ -488,7 +488,7 @@ namespace Bacchus
                         {
                             Console.WriteLine("update family " + family.RefFamille + ": " + family.Nom);
                             refreshStatusStrip("Modifier la famille " + family.RefFamille + ": " + family.Nom + ".");
-                            FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family.RefFamille.ToString());
+                            FormModifFamille formUpdateFamily = new FormModifFamille(magasin, family);    //Modification pour adaptation code thomas anciennement "family.RefFamille.ToString()"
                             formUpdateFamily.ShowDialog();
                         }
 
@@ -502,7 +502,7 @@ namespace Bacchus
                         {
                             Console.WriteLine("update subfamily " + subFamily.RefSousFamille + ": " + subFamily.Nom);
                             refreshStatusStrip("Modifier la sous-famille " + subFamily.RefSousFamille + ": " + subFamily.Nom + ".");
-                            FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily.ToString());
+                            FormModifSousFamille formUpdateSubFamily = new FormModifSousFamille(magasin, subFamily); //Modification pour adaptation code thomas anciennement "subFamily.ToString()"
                             formUpdateSubFamily.ShowDialog();
                         }
                     }
@@ -515,7 +515,7 @@ namespace Bacchus
                         {
                             Console.WriteLine("update brand " + brand.RefMarque + ": " + brand.Nom);
                             refreshStatusStrip("Modifier la marque " + brand.RefMarque + ": " + brand.Nom + ".");
-                            FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand.RefMarque.ToString());
+                            FormModifMarque formUpdateBrand = new FormModifMarque(magasin, brand); //Modification pour adaptation code thomas anciennement "brand.RefMarque.ToString()"
                             formUpdateBrand.ShowDialog();
                         }
                     }
